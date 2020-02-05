@@ -10,10 +10,7 @@ namespace MultiGry
     {
         static void Main(string[] args)
         {
-            DisplayOfTheMainApplicationMenu MenuDisplay = new DisplayOfTheMainApplicationMenu();
-            MenuDisplay.DisplayingTheMenu();
-
-            
+                 
         }
     }
 }

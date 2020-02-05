@@ -12,6 +12,7 @@ namespace MultiGry
         {
             Console.WriteLine("Wybierz jedną z poniższych gier/aplikacji naciskają odpowiedni klawisz:");
             Console.WriteLine("1. Papier, kamień, nożyce");
+            Console.WriteLine("2. Wyjście z programu");
         }
     }
 
@@ -20,48 +21,52 @@ namespace MultiGry
         void GameExecuting();
     }
 
-    class OptionSelector
+    class MainMenu
     {
+        private DisplayOfTheMainApplicationMenu MenuDisplay;
         private enum OptionsCategory
         {
-            Game, Wrong, ExitTheProgram
+            NotSelectedYet, Game, Wrong, ExitTheProgram
         }
-
         private int OptionNumber;
         private List<IMenuOption> MenuOptions;
-        
-        public void SimulationOfMainMenuOperation()
+
+        public MainMenu()
         {
-            do
-            {
-                if (TryToSelectTheRightOption() == OptionsCategory.ExitTheProgram)
-                    return;
-            }
-            while (true);
+            MenuDisplay = new DisplayOfTheMainApplicationMenu();
         }
 
-        private OptionsCategory TryToSelectTheRightOption()
+        public void ExecutingTheMainMenuOperation()
         {
-            try
-            {
-               return SelectingOption();
-            }
-            catch (InvalidOperationException exception)
-            {
-                Console.WriteLine(exception.Message);
-                return OptionsCategory.Wrong;
-            }
+            MenuDisplay.DisplayingTheMenu();
+            OptionsCategory CategoryOfOptionSelected = 0;
+
+            while (CategoryOfOptionSelected != OptionsCategory.ExitTheProgram)
+                CategoryOfOptionSelected = SelectingOption();
         }
 
         private OptionsCategory SelectingOption()
         {
+            try
+            {
+                return TryToSelectTheRightOption();
+            }
+            catch (InvalidOperationException InvalidKeyException)
+            {
+                Console.WriteLine(InvalidKeyException.Message);
+                return OptionsCategory.Wrong;
+            }
+        }
+
+        private OptionsCategory TryToSelectTheRightOption()
+        {
             OptionNumber = GettingTheKeySelectingByTheUser() - ConsoleKey.D0;
 
-            if (IsTheNumberOfTheSelectedOptionAppropriate())
-                return RunningTheSelectedGame();
-
-            else if (DidTheUserChooseToExitTheProgram())
+            if (DidTheUserChooseToExitTheProgram())
                 return OptionsCategory.ExitTheProgram;
+
+            else if (IsTheNumberOfTheSelectedOptionAppropriate())
+                return RunningTheSelectedGame();
 
             else
                 throw new InvalidOperationException("Naciśnięto niewłaściwy klawisz! (dostępne są tylko 1-" + MenuOptions.Count + ")");
@@ -79,7 +84,7 @@ namespace MultiGry
             return OptionsCategory.Game;
         }
 
-        private bool DidTheUserChooseToExitTheProgram() => 
+        private bool DidTheUserChooseToExitTheProgram() =>
             OptionNumber == MenuOptions.Count;
     }
 }
