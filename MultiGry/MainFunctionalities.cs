@@ -58,15 +58,13 @@ namespace MultiGry
             OptionNumber = GettingTheKeySelectingByTheUser() - ConsoleKey.D0;
 
             if (IsTheNumberOfTheSelectedOptionAppropriate())
-                MenuOptions[OptionNumber - 1].GameExecuting();
+                return RunningTheSelectedGame();
 
-            else if (OptionNumber == MenuOptions.Count)
+            else if (DidTheUserChooseToExitTheProgram())
                 return OptionsCategory.ExitTheProgram;
 
             else
                 throw new InvalidOperationException("Naciśnięto niewłaściwy klawisz! (dostępne są tylko 1-" + MenuOptions.Count + ")");
-
-            return OptionsCategory.Game;
         }
 
         private ConsoleKey GettingTheKeySelectingByTheUser() =>
@@ -74,5 +72,14 @@ namespace MultiGry
 
         private bool IsTheNumberOfTheSelectedOptionAppropriate() =>
             OptionNumber >= 1 && OptionNumber <= MenuOptions.Count;
+
+        private OptionsCategory RunningTheSelectedGame()
+        {
+            MenuOptions[OptionNumber - 1].GameExecuting();
+            return OptionsCategory.Game;
+        }
+
+        private bool DidTheUserChooseToExitTheProgram() => 
+            OptionNumber == MenuOptions.Count;
     }
 }
