@@ -20,8 +20,6 @@ namespace MultiGry
 
             for (int i = 0; i < options.Count - 1; ++i)
                 Console.WriteLine(i + ". " + options[i].NameOption);
-
-            Console.WriteLine("2. Wyjście z programu");
         }
     }
 
@@ -43,11 +41,14 @@ namespace MultiGry
 
         public void ExecutingTheMainMenuOperation()
         {
-            MenuDisplay.DisplayingTheMenu(MenuOptions);
             OptionsCategory CategoryOfOptionSelected = 0;
 
             while (CategoryOfOptionSelected != OptionsCategory.ExitTheProgram)
+            {
+                MenuDisplay.DisplayingTheMenu(MenuOptions);
                 CategoryOfOptionSelected = SelectingOption();
+            }
+                
         }
 
         private OptionsCategory SelectingOption()
