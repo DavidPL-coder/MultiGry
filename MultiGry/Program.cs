@@ -8,9 +8,21 @@ namespace MultiGry
 {
     class Program
     {
+        static List<IMenuOption> GetListOfMenuOption()
+        {
+            var options = new List<IMenuOption>();
+
+            options.Add(new PaperRockScissorsGame());
+            options.Add(new ExitOption());
+
+            return options;
+        }
+
         static void Main(string[] args)
         {
-                 
+            MainMenu Menu = new MainMenu(GetListOfMenuOption());
+
+            Menu.ExecutingTheMainMenuOperation();
         }
     }
 }

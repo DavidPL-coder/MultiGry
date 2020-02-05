@@ -6,38 +6,24 @@ using System.Threading.Tasks;
 
 namespace MultiGry
 {
-    interface IMenuOption
+    enum OptionsCategory
     {
-        void OptionExecuting();
-        string NameOption { get; }
+        NotSelectedYet, Game, Wrong, ExitTheProgram, CanceledExit
     }
 
-    class DisplayOfTheMainApplicationMenu
+    interface IMenuOption
     {
-        public void DisplayingTheMenu(List<IMenuOption> options)
-        {
-            Console.WriteLine("Wybierz jedną z poniższych gier/aplikacji naciskają odpowiedni klawisz:");
-
-            for (int i = 0; i < options.Count - 1; ++i)
-                Console.WriteLine(i + ". " + options[i].NameOption);
-        }
+        OptionsCategory OptionExecuting();
+        string NameOption { get; }
     }
 
     class MainMenu
     {
-        private DisplayOfTheMainApplicationMenu MenuDisplay;
-        private enum OptionsCategory
-        {
-            NotSelectedYet, Game, Wrong, ExitTheProgram
-        }
         private int OptionNumber;
         private List<IMenuOption> MenuOptions;
 
-        public MainMenu()
-        {
-            MenuOptions = new List<IMenuOption>();
-            MenuDisplay = new DisplayOfTheMainApplicationMenu();
-        }
+        public MainMenu(List<IMenuOption> menuOptions) =>
+            MenuOptions = menuOptions;
 
         public void ExecutingTheMainMenuOperation()
         {
@@ -45,10 +31,19 @@ namespace MultiGry
 
             while (CategoryOfOptionSelected != OptionsCategory.ExitTheProgram)
             {
-                MenuDisplay.DisplayingTheMenu(MenuOptions);
+                Console.Clear();
+                DisplayingTheMenu();
                 CategoryOfOptionSelected = SelectingOption();
             }
-                
+        }
+
+
+        private void DisplayingTheMenu()
+        {
+            Console.WriteLine("Wybierz jedną z poniższych gier/aplikacji naciskają odpowiedni klawisz:");
+
+            for (int i = 1; i <= MenuOptions.Count; ++i)
+                Console.WriteLine(i + ". " + MenuOptions[i - 1].NameOption);
         }
 
         private OptionsCategory SelectingOption()
@@ -66,17 +61,20 @@ namespace MultiGry
 
         private OptionsCategory TryToSelectTheRightOption()
         {
-            OptionNumber = GettingTheKeySelectingByTheUser() - ConsoleKey.D0;
+            GetTheOptionNumber();
 
-            if (DidTheUserChooseToExitTheProgram())
-                return OptionsCategory.ExitTheProgram;
-
-            else if (IsTheNumberOfTheSelectedOptionAppropriate())
-                return RunningTheSelectedGame();
+            if (IsTheNumberOfTheSelectedOptionAppropriate())
+            {
+                Console.Clear();
+                return RunningTheSelectedOption();
+            }
 
             else
                 throw new InvalidOperationException("Naciśnięto niewłaściwy klawisz! (dostępne są tylko 1-" + MenuOptions.Count + ")");
         }
+
+        private void GetTheOptionNumber() =>
+            OptionNumber = GettingTheKeySelectingByTheUser() - ConsoleKey.D0;
 
         private ConsoleKey GettingTheKeySelectingByTheUser() =>
             Console.ReadKey().Key;
@@ -84,13 +82,26 @@ namespace MultiGry
         private bool IsTheNumberOfTheSelectedOptionAppropriate() =>
             OptionNumber >= 1 && OptionNumber <= MenuOptions.Count;
 
-        private OptionsCategory RunningTheSelectedGame()
-        {
+        /// <return> the last element of the "MenuOptions" list should have the dynamic type "ExitOption" and its "OptionExecuting" method returns 
+        /// "OptionsCategory.ExitTheProgram" or "OptionsCategory.CanceledExit". For another dynamic type, "OptionsCategory.Game" should be returned </return>
+        private OptionsCategory RunningTheSelectedOption() =>
             MenuOptions[OptionNumber - 1].OptionExecuting();
-            return OptionsCategory.Game;
-        }
+    }
 
-        private bool DidTheUserChooseToExitTheProgram() =>
-            OptionNumber == MenuOptions.Count;
+    class ExitOption : IMenuOption
+    {
+        public string NameOption => "Wyjście z programu";
+
+        public OptionsCategory OptionExecuting()
+        {
+            Console.WriteLine("Czy napewno chcesz wyjść z programu? (naciśnij enter aby wyjść, bądź inny klawisz aby anulować)");
+
+            if (Console.ReadKey().Key == ConsoleKey.Enter)
+                return OptionsCategory.ExitTheProgram;
+
+            else
+                return OptionsCategory.CanceledExit;
+
+        }
     }
 }

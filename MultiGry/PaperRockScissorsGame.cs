@@ -10,9 +10,11 @@ namespace MultiGry
     {
         public string NameOption => "Papier, kamień, nożyce";
 
-        public void OptionExecuting()
+        public OptionsCategory OptionExecuting()
         {
             Console.WriteLine("hhhhh");
+            System.Threading.Thread.Sleep(2500);
+            return OptionsCategory.Game;
             // throw new NotImplementedException();
         }
     }
