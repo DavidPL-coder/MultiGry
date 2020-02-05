@@ -6,19 +6,23 @@ using System.Threading.Tasks;
 
 namespace MultiGry
 {
-    class DisplayOfTheMainApplicationMenu
-    {
-        public void DisplayingTheMenu()
-        {
-            Console.WriteLine("Wybierz jedną z poniższych gier/aplikacji naciskają odpowiedni klawisz:");
-            Console.WriteLine("1. Papier, kamień, nożyce");
-            Console.WriteLine("2. Wyjście z programu");
-        }
-    }
-
     interface IMenuOption
     {
-        void GameExecuting();
+        void OptionExecuting();
+        string NameOption { get; }
+    }
+
+    class DisplayOfTheMainApplicationMenu
+    {
+        public void DisplayingTheMenu(List<IMenuOption> options)
+        {
+            Console.WriteLine("Wybierz jedną z poniższych gier/aplikacji naciskają odpowiedni klawisz:");
+
+            for (int i = 0; i < options.Count - 1; ++i)
+                Console.WriteLine(i + ". " + options[i].NameOption);
+
+            Console.WriteLine("2. Wyjście z programu");
+        }
     }
 
     class MainMenu
@@ -33,12 +37,13 @@ namespace MultiGry
 
         public MainMenu()
         {
+            MenuOptions = new List<IMenuOption>();
             MenuDisplay = new DisplayOfTheMainApplicationMenu();
         }
 
         public void ExecutingTheMainMenuOperation()
         {
-            MenuDisplay.DisplayingTheMenu();
+            MenuDisplay.DisplayingTheMenu(MenuOptions);
             OptionsCategory CategoryOfOptionSelected = 0;
 
             while (CategoryOfOptionSelected != OptionsCategory.ExitTheProgram)
@@ -80,7 +85,7 @@ namespace MultiGry
 
         private OptionsCategory RunningTheSelectedGame()
         {
-            MenuOptions[OptionNumber - 1].GameExecuting();
+            MenuOptions[OptionNumber - 1].OptionExecuting();
             return OptionsCategory.Game;
         }
 

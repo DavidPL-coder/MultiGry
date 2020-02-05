@@ -8,9 +8,11 @@ namespace MultiGry
 {
     class PaperRockScissorsGame : IMenuOption
     {
-        public void GameExecuting()
+        public string NameOption => "Papier, kamień, nożyce";
+
+        public void OptionExecuting()
         {
-            Console.WriteLine("Jebać PiS");
+            Console.WriteLine("hhhhh");
             // throw new NotImplementedException();
         }
     }
