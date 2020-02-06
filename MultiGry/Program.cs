@@ -21,8 +21,7 @@ namespace MultiGry
         static void Main(string[] args)
         {
             MainMenu Menu = new MainMenu(GetListOfMenuOption());
-
-            Menu.ExecutingTheMainMenuOperation();
+            Menu.ExecutingMainMenuOperation();
         }
     }
 }

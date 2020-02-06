@@ -12,10 +12,11 @@ namespace MultiGry
 
         public OptionsCategory OptionExecuting()
         {
+            /// this code was written only for testing
+
             Console.WriteLine("hhhhh");
             System.Threading.Thread.Sleep(2500);
             return OptionsCategory.Game;
-            // throw new NotImplementedException();
         }
     }
 }

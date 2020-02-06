@@ -25,20 +25,20 @@ namespace MultiGry
         public MainMenu(List<IMenuOption> menuOptions) =>
             MenuOptions = menuOptions;
 
-        public void ExecutingTheMainMenuOperation()
+        public void ExecutingMainMenuOperation()
         {
             OptionsCategory CategoryOfOptionSelected = 0;
 
             while (CategoryOfOptionSelected != OptionsCategory.ExitTheProgram)
             {
                 Console.Clear();
-                DisplayingTheMenu();
+                DisplayingMenu();
                 CategoryOfOptionSelected = SelectingOption();
             }
         }
 
 
-        private void DisplayingTheMenu()
+        private void DisplayingMenu()
         {
             Console.WriteLine("Wybierz jedną z poniższych gier/aplikacji naciskają odpowiedni klawisz:");
 
@@ -50,7 +50,7 @@ namespace MultiGry
         {
             try
             {
-                return TryToSelectTheRightOption();
+                return TryToSelectRightOption();
             }
             catch (InvalidOperationException InvalidKeyException)
             {
@@ -59,32 +59,32 @@ namespace MultiGry
             }
         }
 
-        private OptionsCategory TryToSelectTheRightOption()
+        private OptionsCategory TryToSelectRightOption()
         {
-            GetTheOptionNumber();
+            GetOptionNumber();
 
-            if (IsTheNumberOfTheSelectedOptionAppropriate())
+            if (ValidateSelectedOption())
             {
                 Console.Clear();
-                return RunningTheSelectedOption();
+                return RunningSelectedOption();
             }
 
             else
                 throw new InvalidOperationException("Naciśnięto niewłaściwy klawisz! (dostępne są tylko 1-" + MenuOptions.Count + ")");
         }
 
-        private void GetTheOptionNumber() =>
-            OptionNumber = GettingTheKeySelectingByTheUser() - ConsoleKey.D0;
+        private void GetOptionNumber() =>
+            OptionNumber = GettingKey() - ConsoleKey.D0;
 
-        private ConsoleKey GettingTheKeySelectingByTheUser() =>
+        private ConsoleKey GettingKey() =>
             Console.ReadKey().Key;
 
-        private bool IsTheNumberOfTheSelectedOptionAppropriate() =>
+        private bool ValidateSelectedOption() =>
             OptionNumber >= 1 && OptionNumber <= MenuOptions.Count;
 
         /// <return> the last element of the "MenuOptions" list should have the dynamic type "ExitOption" and its "OptionExecuting" method returns 
         /// "OptionsCategory.ExitTheProgram" or "OptionsCategory.CanceledExit". For another dynamic type, "OptionsCategory.Game" should be returned </return>
-        private OptionsCategory RunningTheSelectedOption() =>
+        private OptionsCategory RunningSelectedOption() =>
             MenuOptions[OptionNumber - 1].OptionExecuting();
     }
 
@@ -101,7 +101,6 @@ namespace MultiGry
 
             else
                 return OptionsCategory.CanceledExit;
-
         }
     }
 }
