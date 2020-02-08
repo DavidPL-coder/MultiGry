@@ -14,39 +14,118 @@ namespace MultiGry
             Paper = 1, Rock, Scissor
         }
         private byte Rounds;
+        private int CurrentRound;
         private int UserPoints;
         private int ComputerPoints;
+        private int Draw;
         private HandShapes OptionChosenByUser;
         private HandShapes OptionDrawnByComputer;
 
         public OptionsCategory OptionExecuting()
         {
-            Console.WriteLine("Podaj ilość rund, w których zmierzysz się z botem: ");
-
-            try
-            {
-                Rounds = byte.Parse(Console.ReadLine());
-            }
-
-            catch (InvalidOperationException NoValue)
-            {
-
-            }
-            catch (OverflowException TooHighValue)
-            {
-
-            }
-
-            DisplayingHandShapeSelection();
-            DownloadingSelectingOption();
-            ComputerSelectionDraw();
-
-            if ((int)OptionChosenByUser < 1 || (int)OptionChosenByUser > 3)
-                Console.WriteLine("Niewłaściwa opcja! Możesz wybrać tylko Papier(1), Kamień(2), Nożyce(3).");
+            GetNumberOfRoundsFromUser();
+            PlayingRounds();
 
             return OptionsCategory.Game;
         }
 
+        private void PlayingRounds()
+        {
+            for (CurrentRound = 1; CurrentRound <= Rounds; ++CurrentRound)
+            {
+                Console.Clear();
+                DisplayingHandShapeSelection();
+                DownloadingSelectingOption();
+                if (!CheckSelectedOption())
+                    break;
+
+                ComputerSelectionDraw();
+                CheckWhoWin();
+                System.Threading.Thread.Sleep(2000);
+            }
+        }
+
+        private bool CheckSelectedOption()
+        {
+            if ((int)OptionChosenByUser < 1 || (int)OptionChosenByUser > 3)
+            {
+                Console.WriteLine("Niewłaściwa opcja! Możesz wybrać tylko Papier(1), Kamień(2), Nożyce(3).");
+                --CurrentRound;                          // they reduce "CurrentRound" we prevent us from going to the next round and this means that the user can repeat his choice.
+                System.Threading.Thread.Sleep(2000);
+                return false;
+            }
+
+            else
+                return true;
+        }
+
+        private void CheckWhoWin()
+        {
+            if (OptionChosenByUser == OptionDrawnByComputer)
+            {
+                Console.WriteLine("Remis!");
+                ++Draw;
+            }
+
+            else if (OptionChosenByUser == HandShapes.Paper && OptionDrawnByComputer == HandShapes.Rock)
+            {
+                Console.WriteLine("Wybrałeś papier, więc WYGRYWASZ bo wylosowano kamień");
+                ++UserPoints;
+            }
+
+            else if (OptionChosenByUser == HandShapes.Rock && OptionDrawnByComputer == HandShapes.Paper)
+            {
+                Console.WriteLine("Wybrałeś kamień, więc PRZEGRYWASZ bo wylosowano papier");
+                ++ComputerPoints;
+            }
+
+            else if (OptionChosenByUser == HandShapes.Rock && OptionDrawnByComputer == HandShapes.Scissor)
+            {
+                Console.WriteLine("Wybrałeś kamień, więc WYGRYWASZ bo wylosowano nożyczki");
+                ++UserPoints;
+            }
+
+            else if (OptionChosenByUser == HandShapes.Scissor && OptionDrawnByComputer == HandShapes.Rock)
+            {
+                Console.WriteLine("Wybrałeś nożyczki, więc PRZEGRYWASZ bo wylosowano kamień");
+                ++ComputerPoints;
+            }
+
+            else if (OptionChosenByUser == HandShapes.Paper && OptionDrawnByComputer == HandShapes.Scissor)
+            {
+                Console.WriteLine("Wybrałeś papier, więc PRZEGRYWASZ bo wylosowano nożyczki");
+                ++ComputerPoints;
+            }
+
+            else if (OptionChosenByUser == HandShapes.Scissor && OptionDrawnByComputer == HandShapes.Paper)
+            {
+                Console.WriteLine("Wybrałeś nożyczki, więc WYGRYWASZ bo wylosowano papier");
+                ++UserPoints;
+            }
+        }
+
+        private void GetNumberOfRoundsFromUser()
+        {
+            Console.Clear();
+            Console.WriteLine("Podaj ilość rund, w których zmierzysz się z botem: ");
+            try
+            {
+                Rounds = byte.Parse(Console.ReadLine());
+
+                if (Rounds == 0)
+                    throw new OverflowException("Liczba rund nie może być równe 0!");
+            }
+            catch (OverflowException overflowEception)
+            {
+                Console.WriteLine(overflowEception.Message + " Dozwolona wartość 1-255.");
+                GetNumberOfRoundsFromUser();
+            }
+            catch (FormatException)
+            {
+                Console.WriteLine("Wartość jest nieprawidłowa");
+                GetNumberOfRoundsFromUser();
+            }
+        }
 
         private void DisplayingHandShapeSelection()
         {
