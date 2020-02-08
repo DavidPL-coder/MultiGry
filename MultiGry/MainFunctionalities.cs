@@ -83,7 +83,8 @@ namespace MultiGry
             OptionNumber >= 1 && OptionNumber <= MenuOptions.Count;
 
         /// <return> the last element of the "MenuOptions" list should have the dynamic type "ExitOption" and its "OptionExecuting" method returns 
-        /// "OptionsCategory.ExitTheProgram" or "OptionsCategory.CanceledExit". For another dynamic type, "OptionsCategory.Game" should be returned </return>
+        /// "OptionsCategory.ExitTheProgram" or "OptionsCategory.CanceledExit". For other dynamic types, "OptionsCategory.Game" should be returned, 
+        /// although it is possible that this method may also return other values. </return>
         private OptionsCategory RunningSelectedOption() =>
             MenuOptions[OptionNumber - 1].OptionExecuting();
     }

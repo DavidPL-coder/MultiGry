@@ -15,18 +15,52 @@ namespace MultiGry
         }
         private byte Rounds;
         private int CurrentRound;
-        private int UserPoints;
-        private int ComputerPoints;
-        private int Draw;
         private HandShapes OptionChosenByUser;
         private HandShapes OptionDrawnByComputer;
+        private int Draws;
+        private int UserPoints;
+        private int ComputerPoints;
+        
+        public PaperRockScissorsGame()
+        {
+            Draws = 0;
+            UserPoints = 0;
+            ComputerPoints = 0;
+        }
 
         public OptionsCategory OptionExecuting()
         {
             GetNumberOfRoundsFromUser();
             PlayingRounds();
+            DisplayResultsOfGame();
+            Console.ReadKey();  
+            ResetPlayerPoints();
+            return UserDecidesWhatToDoNext();
+        }
 
-            return OptionsCategory.Game;
+        private void GetNumberOfRoundsFromUser()
+        {
+            Console.Clear();
+            Console.Write("Podaj ilość rund, w których zmierzysz się z botem: ");
+            try
+            {
+                Rounds = byte.Parse(Console.ReadLine());
+
+                if (Rounds == 0)
+                    throw new OverflowException("Liczba rund nie może być równe 0!");
+            }
+            catch (OverflowException overflowEception)
+            {
+                Console.WriteLine(overflowEception.Message + " Dozwolona wartość 1-255.");
+                System.Threading.Thread.Sleep(2500);
+                GetNumberOfRoundsFromUser();
+            }
+            catch (FormatException)
+            {
+                Console.WriteLine("Wartość jest nieprawidłowa");
+                System.Threading.Thread.Sleep(2500);
+                GetNumberOfRoundsFromUser();
+            }
         }
 
         private void PlayingRounds()
@@ -39,11 +73,26 @@ namespace MultiGry
                 if (!CheckSelectedOption())
                     break;
 
+                // we display options again to hide the key selected by the user:
+                Console.Clear();
+                DisplayingHandShapeSelection();   
+                
                 ComputerSelectionDraw();
                 CheckWhoWin();
                 System.Threading.Thread.Sleep(2000);
             }
         }
+
+        private void DisplayingHandShapeSelection()
+        {
+            Console.WriteLine("Wybierz:");
+            Console.WriteLine("1. Papier");
+            Console.WriteLine("2. Kamień");
+            Console.WriteLine("3. Nożyce");
+        }
+
+        private void DownloadingSelectingOption() =>
+            OptionChosenByUser = (HandShapes)(Console.ReadKey().Key - ConsoleKey.D0);
 
         private bool CheckSelectedOption()
         {
@@ -59,12 +108,18 @@ namespace MultiGry
                 return true;
         }
 
+        private void ComputerSelectionDraw()
+        {
+            var random = new Random();
+            OptionDrawnByComputer = (HandShapes)random.Next(1, 4);
+        }
+
         private void CheckWhoWin()
         {
             if (OptionChosenByUser == OptionDrawnByComputer)
             {
                 Console.WriteLine("Remis!");
-                ++Draw;
+                ++Draws;
             }
 
             else if (OptionChosenByUser == HandShapes.Paper && OptionDrawnByComputer == HandShapes.Rock)
@@ -104,44 +159,44 @@ namespace MultiGry
             }
         }
 
-        private void GetNumberOfRoundsFromUser()
+        private void DisplayResultsOfGame()
         {
             Console.Clear();
-            Console.WriteLine("Podaj ilość rund, w których zmierzysz się z botem: ");
-            try
-            {
-                Rounds = byte.Parse(Console.ReadLine());
-
-                if (Rounds == 0)
-                    throw new OverflowException("Liczba rund nie może być równe 0!");
-            }
-            catch (OverflowException overflowEception)
-            {
-                Console.WriteLine(overflowEception.Message + " Dozwolona wartość 1-255.");
-                GetNumberOfRoundsFromUser();
-            }
-            catch (FormatException)
-            {
-                Console.WriteLine("Wartość jest nieprawidłowa");
-                GetNumberOfRoundsFromUser();
-            }
+            Console.WriteLine("Wyniki:");
+            Console.WriteLine("Twoje punkty: " + UserPoints);
+            Console.WriteLine("Punkty bota: " + ComputerPoints);
+            Console.WriteLine("Remisy: " + Draws);
         }
 
-        private void DisplayingHandShapeSelection()
-        {
-            Console.WriteLine("Wybierz:");
-            Console.WriteLine("1. Papier");
-            Console.WriteLine("2. Kamień");
-            Console.WriteLine("3. Nożyce");
-        }
+        private void ResetPlayerPoints() =>
+            Draws = UserPoints = ComputerPoints = 0;
 
-        private void DownloadingSelectingOption() =>
-            OptionChosenByUser = (HandShapes)(Console.ReadKey().Key - ConsoleKey.D0);
-
-        private void ComputerSelectionDraw()
+        private OptionsCategory UserDecidesWhatToDoNext()
         {
-            var random = new Random();
-            OptionDrawnByComputer = (HandShapes) random.Next(1, 4);
+            Console.Clear();
+            Console.WriteLine("Co dalej chcesz robić?");
+            Console.WriteLine("1. Zagrać jeszcze raz");
+            Console.WriteLine("2. Powrócić do Menu");
+            Console.WriteLine("3. Wyjść z programu");
+
+            var KeyChosenByPlayer = Console.ReadKey().Key;
+
+            if (KeyChosenByPlayer == ConsoleKey.D1)
+                return OptionExecuting();
+
+            if (KeyChosenByPlayer == ConsoleKey.D2)
+                return OptionsCategory.Game;
+
+            Console.Clear();
+
+            if (KeyChosenByPlayer == ConsoleKey.D3)
+            {         
+                var ExitFromProgram = new ExitOption();
+                return ExitFromProgram.OptionExecuting();
+            }
+
+            else
+                return UserDecidesWhatToDoNext();
         }
     }
 }
