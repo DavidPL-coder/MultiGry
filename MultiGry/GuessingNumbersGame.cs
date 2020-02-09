@@ -78,10 +78,8 @@ namespace MultiGry
             }
         }
 
-        private void ResultDisplay()
-        {
+        private void ResultDisplay() => 
             Console.WriteLine("Odgadłeś tę liczbę w próbie " + UserAttempt);
-        }
 
         private void ResetResult() =>
             UserAttempt = 1;

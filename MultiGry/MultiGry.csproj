@@ -44,6 +44,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GuessingNumbersGame.cs" />
+    <Compile Include="GuessingPIN_Game.cs" />
     <Compile Include="MainFunctionalities.cs" />
     <Compile Include="PaperRockScissorsGame.cs" />
     <Compile Include="Program.cs" />

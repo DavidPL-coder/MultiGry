@@ -95,7 +95,8 @@ namespace MultiGry
 
         public OptionsCategory OptionExecuting()
         {
-            Console.WriteLine("Czy napewno chcesz wyjść z programu? (naciśnij enter aby wyjść, bądź inny klawisz aby anulować)");
+            Console.WriteLine("Czy napewno chcesz wyjść z programu?");
+            Console.WriteLine("(naciśnij enter aby wyjść, bądź inny klawisz aby anulować)");
 
             if (Console.ReadKey().Key == ConsoleKey.Enter)
                 return OptionsCategory.ExitTheProgram;
