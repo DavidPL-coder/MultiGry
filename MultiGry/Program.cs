@@ -13,6 +13,7 @@ namespace MultiGry
             var options = new List<IMenuOption>();
 
             options.Add(new PaperRockScissorsGame());
+            options.Add(new GuessingNumbersGame());
             options.Add(new ExitOption());
 
             return options;

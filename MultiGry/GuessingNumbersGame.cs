@@ -19,10 +19,13 @@ namespace MultiGry
         public OptionsCategory OptionExecuting()
         {
             NumberDraw();
-            UserAttemptsToGuessNumber();
+            UserAttemptsToGuessNumber();   
             ResultDisplay();
+            Console.ReadKey();
+            ResetResult();
 
-            return OptionsCategory.Game;
+            var ProgramExecution = new DecisionOnFurtherCourseOfProgram(this);
+            return ProgramExecution.UserDecidesWhatToDoNext();
         }
 
 
@@ -52,7 +55,7 @@ namespace MultiGry
             }
             catch (FormatException)
             {
-                Console.WriteLine("To nie jest liczba!" + "\n");
+                Console.WriteLine("Nieprawidłowa wartość!" + "\n");
             }
             catch (OverflowException)
             {
@@ -79,5 +82,8 @@ namespace MultiGry
         {
             Console.WriteLine("Odgadłeś tę liczbę w próbie " + UserAttempt);
         }
+
+        private void ResetResult() =>
+            UserAttempt = 1;
     }
 }

@@ -104,4 +104,39 @@ namespace MultiGry
                 return OptionsCategory.CanceledExit;
         }
     }
+
+    class DecisionOnFurtherCourseOfProgram
+    {
+        private IMenuOption Option;
+
+        public DecisionOnFurtherCourseOfProgram(IMenuOption option) => 
+            Option = option;
+
+        public OptionsCategory UserDecidesWhatToDoNext()
+        {
+            Console.Clear();
+            Console.WriteLine("Co dalej chcesz robić?");
+            Console.WriteLine("1. Zagrać jeszcze raz");
+            Console.WriteLine("2. Powrócić do Menu");
+            Console.WriteLine("3. Wyjść z programu");
+
+            var KeyChosenByPlayer = Console.ReadKey().Key;
+            Console.Clear();
+
+            if (KeyChosenByPlayer == ConsoleKey.D1)
+                return Option.OptionExecuting();
+
+            if (KeyChosenByPlayer == ConsoleKey.D2)
+                return OptionsCategory.Game;
+
+            if (KeyChosenByPlayer == ConsoleKey.D3)
+            {
+                var ExitFromProgram = new ExitOption();
+                return ExitFromProgram.OptionExecuting();
+            }
+
+            else
+                return UserDecidesWhatToDoNext();
+        }
+    }
 }

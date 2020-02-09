@@ -35,7 +35,9 @@ namespace MultiGry
             DisplayResultsOfGame();
             Console.ReadKey();  
             ResetPlayerPoints();
-            return UserDecidesWhatToDoNext();
+
+            var ProgramExecution = new DecisionOnFurtherCourseOfProgram(this);
+            return ProgramExecution.UserDecidesWhatToDoNext();
         }
 
         private void GetNumberOfRoundsFromUser()
@@ -170,33 +172,5 @@ namespace MultiGry
 
         private void ResetPlayerPoints() =>
             Draws = UserPoints = ComputerPoints = 0;
-                                
-        private OptionsCategory UserDecidesWhatToDoNext()
-        {
-            Console.Clear();
-            Console.WriteLine("Co dalej chcesz robić?");
-            Console.WriteLine("1. Zagrać jeszcze raz");
-            Console.WriteLine("2. Powrócić do Menu");
-            Console.WriteLine("3. Wyjść z programu");
-
-            var KeyChosenByPlayer = Console.ReadKey().Key;
-
-            if (KeyChosenByPlayer == ConsoleKey.D1)
-                return OptionExecuting();
-
-            if (KeyChosenByPlayer == ConsoleKey.D2)
-                return OptionsCategory.Game;
-
-            Console.Clear();
-
-            if (KeyChosenByPlayer == ConsoleKey.D3)
-            {         
-                var ExitFromProgram = new ExitOption();
-                return ExitFromProgram.OptionExecuting();
-            }
-
-            else
-                return UserDecidesWhatToDoNext();
-        }
     }
 }
