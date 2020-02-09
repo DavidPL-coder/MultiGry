@@ -170,7 +170,7 @@ namespace MultiGry
 
         private void ResetPlayerPoints() =>
             Draws = UserPoints = ComputerPoints = 0;
-
+                                
         private OptionsCategory UserDecidesWhatToDoNext()
         {
             Console.Clear();
