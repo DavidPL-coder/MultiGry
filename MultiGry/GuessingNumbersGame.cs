@@ -13,21 +13,21 @@ namespace MultiGry
         private int UserAttempt;
         private int UsersProposal;
 
-        public GuessingNumbersGame() => 
-            UserAttempt = 1;
-
         public OptionsCategory OptionExecuting()
         {
+            SetDefaults();
             NumberDraw();
             UserAttemptsToGuessNumber();   
             ResultDisplay();
-            Console.ReadKey();
-            ResetResult();
+            Console.ReadKey();     
 
             var ProgramExecution = new DecisionOnFurtherCourseOfProgram(this);
             return ProgramExecution.UserDecidesWhatToDoNext();
         }
 
+
+        private void SetDefaults() =>
+            UserAttempt = 1;
 
         private void NumberDraw()
         {
@@ -80,8 +80,5 @@ namespace MultiGry
 
         private void ResultDisplay() => 
             Console.WriteLine("Odgadłeś tę liczbę w próbie " + UserAttempt);
-
-        private void ResetResult() =>
-            UserAttempt = 1;
     }
 }

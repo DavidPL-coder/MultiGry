@@ -20,25 +20,22 @@ namespace MultiGry
         private int Draws;
         private int UserPoints;
         private int ComputerPoints;
-        
-        public PaperRockScissorsGame()
-        {
-            Draws = 0;
-            UserPoints = 0;
-            ComputerPoints = 0;
-        }
 
         public OptionsCategory OptionExecuting()
         {
+            SetDefaults();
             GetNumberOfRoundsFromUser();
             PlayingRounds();
             DisplayResultsOfGame();
-            Console.ReadKey();  
-            ResetPlayerPoints();
+            Console.ReadKey();     
 
             var ProgramExecution = new DecisionOnFurtherCourseOfProgram(this);
             return ProgramExecution.UserDecidesWhatToDoNext();
         }
+
+
+        private void SetDefaults() => 
+            Draws = UserPoints = ComputerPoints = 0;
 
         private void GetNumberOfRoundsFromUser()
         {
@@ -72,8 +69,11 @@ namespace MultiGry
                 Console.Clear();
                 DisplayingHandShapeSelection();
                 DownloadingSelectingOption();
-                if (!CheckSelectedOption())
-                    break;
+                if (!CheckSelectedRightOption())
+                {
+                    DisplayMessageAboutWrongSelection();
+                    continue;
+                }         
 
                 // we display options again to hide the key selected by the user:
                 Console.Clear();
@@ -96,18 +96,14 @@ namespace MultiGry
         private void DownloadingSelectingOption() =>
             OptionChosenByUser = (HandShapes)(Console.ReadKey().Key - ConsoleKey.D0);
 
-        private bool CheckSelectedOption()
-        {
-            if ((int)OptionChosenByUser < 1 || (int)OptionChosenByUser > 3)
-            {
-                Console.WriteLine("Niewłaściwa opcja! Możesz wybrać tylko Papier(1), Kamień(2), Nożyce(3).");
-                --CurrentRound;                          // they reduce "CurrentRound" we prevent us from going to the next round and this means that the user can repeat his choice.
-                System.Threading.Thread.Sleep(2000);
-                return false;
-            }
+        private bool CheckSelectedRightOption() => 
+            (int)OptionChosenByUser >= 1 && (int)OptionChosenByUser <= 3;
 
-            else
-                return true;
+        private void DisplayMessageAboutWrongSelection()
+        {
+            Console.WriteLine("\n" + "Niewłaściwa opcja! Możesz wybrać tylko Papier(1), Kamień(2), Nożyce(3).");
+            --CurrentRound;                          // they reduce "CurrentRound" we prevent us from going to the next round and this means that the user can repeat his choice.
+            System.Threading.Thread.Sleep(2000);
         }
 
         private void ComputerSelectionDraw()
@@ -126,37 +122,37 @@ namespace MultiGry
 
             else if (OptionChosenByUser == HandShapes.Paper && OptionDrawnByComputer == HandShapes.Rock)
             {
-                Console.WriteLine("Wybrałeś papier, więc WYGRYWASZ bo wylosowano kamień");
+                Console.WriteLine("WYGRYWASZ (bot wybrał kamień)");
                 ++UserPoints;
             }
 
             else if (OptionChosenByUser == HandShapes.Rock && OptionDrawnByComputer == HandShapes.Paper)
             {
-                Console.WriteLine("Wybrałeś kamień, więc PRZEGRYWASZ bo wylosowano papier");
+                Console.WriteLine("PRZEGRYWASZ (bot wybrał papier)");
                 ++ComputerPoints;
             }
 
             else if (OptionChosenByUser == HandShapes.Rock && OptionDrawnByComputer == HandShapes.Scissor)
             {
-                Console.WriteLine("Wybrałeś kamień, więc WYGRYWASZ bo wylosowano nożyczki");
+                Console.WriteLine("WYGRYWASZ (bot wybrał nożyczki)");
                 ++UserPoints;
             }
 
             else if (OptionChosenByUser == HandShapes.Scissor && OptionDrawnByComputer == HandShapes.Rock)
             {
-                Console.WriteLine("Wybrałeś nożyczki, więc PRZEGRYWASZ bo wylosowano kamień");
+                Console.WriteLine("PRZEGRYWASZ (bot wybrał kamień)");
                 ++ComputerPoints;
             }
 
             else if (OptionChosenByUser == HandShapes.Paper && OptionDrawnByComputer == HandShapes.Scissor)
             {
-                Console.WriteLine("Wybrałeś papier, więc PRZEGRYWASZ bo wylosowano nożyczki");
+                Console.WriteLine("PRZEGRYWASZ (bot wybrał nożyczki)");
                 ++ComputerPoints;
             }
 
             else if (OptionChosenByUser == HandShapes.Scissor && OptionDrawnByComputer == HandShapes.Paper)
             {
-                Console.WriteLine("Wybrałeś nożyczki, więc WYGRYWASZ bo wylosowano papier");
+                Console.WriteLine("WYGRYWASZ (bot wybrał papier)");
                 ++UserPoints;
             }
         }
@@ -169,8 +165,5 @@ namespace MultiGry
             Console.WriteLine("Punkty bota: " + ComputerPoints);
             Console.WriteLine("Remisy: " + Draws);
         }
-
-        private void ResetPlayerPoints() =>
-            Draws = UserPoints = ComputerPoints = 0;
     }
 }
