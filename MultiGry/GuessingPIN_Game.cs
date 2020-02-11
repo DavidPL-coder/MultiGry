@@ -124,6 +124,10 @@ namespace MultiGry
             else
                 Console.WriteLine("Zgadłeś PIN w ciągu " + Timer.ElapsedMilliseconds / 1000.0 + " s oraz w próbie " + UserAttempt);
 
+            Console.Write("PIN: ");
+            for (int i = 0; i < RandomPINnumbers.Length; ++i)
+                Console.Write(RandomPINnumbers[i]);
+
             Console.ReadKey();
         }
     }

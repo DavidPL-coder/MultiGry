@@ -57,7 +57,7 @@ namespace MultiGry
             catch (FormatException)
             {
                 Console.WriteLine("Wartość jest nieprawidłowa");
-                System.Threading.Thread.Sleep(2500);
+                System.Threading.Thread.Sleep(1000);
                 GetNumberOfRoundsFromUser();
             }
         }
@@ -81,7 +81,7 @@ namespace MultiGry
                 
                 ComputerSelectionDraw();
                 CheckWhoWin();
-                System.Threading.Thread.Sleep(2000);
+                System.Threading.Thread.Sleep(1500);
             }
         }
 

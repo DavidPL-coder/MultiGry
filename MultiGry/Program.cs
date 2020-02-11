@@ -15,6 +15,7 @@ namespace MultiGry
             options.Add(new PaperRockScissorsGame());
             options.Add(new GuessingNumbersGame());
             options.Add(new GuessingPIN_Game());
+            options.Add(new BinaryClockOption());
             options.Add(new ExitOption());
 
             return options;

@@ -8,7 +8,7 @@ namespace MultiGry
 {
     enum OptionsCategory
     {
-        NotSelectedYet, Game, Wrong, ExitTheProgram, CanceledExit
+        NotSelectedYet, NormalOption, Wrong, ExitTheProgram, CanceledExit
     }
 
     interface IMenuOption
@@ -128,7 +128,7 @@ namespace MultiGry
                 return Option.OptionExecuting();
 
             if (KeyChosenByPlayer == ConsoleKey.D2)
-                return OptionsCategory.Game;
+                return OptionsCategory.NormalOption;
 
             if (KeyChosenByPlayer == ConsoleKey.D3)
             {

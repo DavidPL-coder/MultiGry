@@ -43,6 +43,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BinaryClockOption.cs" />
     <Compile Include="GuessingNumbersGame.cs" />
     <Compile Include="GuessingPIN_Game.cs" />
     <Compile Include="MainFunctionalities.cs" />
