@@ -46,6 +46,7 @@
     <Compile Include="BinaryClockOption.cs" />
     <Compile Include="GuessingNumbersGame.cs" />
     <Compile Include="GuessingPIN_Game.cs" />
+    <Compile Include="HangmanGame.cs" />
     <Compile Include="MainFunctionalities.cs" />
     <Compile Include="PaperRockScissorsGame.cs" />
     <Compile Include="Program.cs" />
