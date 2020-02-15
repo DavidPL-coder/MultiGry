@@ -15,11 +15,13 @@ namespace MultiGry
         private string RandomWord;
         private string GuessedLetters;
         private char PlayerLetter;
+        private List<char> User_SelectedLetters;
 
         public HangmanGame()
         {
             SetHangmanGrawing();
             SetAllWords();
+            User_SelectedLetters = new List<char>();
         }
 
         private void SetHangmanGrawing()
@@ -108,6 +110,7 @@ namespace MultiGry
             NumberOfUserErrors = 0;
             DrawWordToDuess();
             SetDefaultValueForGuessedLetters();
+            User_SelectedLetters.Clear();
         }
 
         private void DrawWordToDuess()
@@ -131,6 +134,8 @@ namespace MultiGry
         {
             for (int i = 0; i < GuessedLetters.Length; ++i)
                 Console.Write(GuessedLetters[i] + " ");
+
+            Console.WriteLine();
         }
 
         private void PlayingGames()
@@ -139,7 +144,8 @@ namespace MultiGry
             {
                 UserGuessingLetter();
                 DisplayGuessedLetters();
-                Console.WriteLine("\n");
+                DisplayLettersSelectedByUser();
+                Console.WriteLine();
                 DisplayHangmanItems();
             }
         }
@@ -156,17 +162,47 @@ namespace MultiGry
         private void UserGuessingLetter()
         {
             UserGivesLetter();
-            Console.Clear();
 
-            if (DidUserGuessedLetter())
+            if (char.IsLetter(PlayerLetter) == false)
+            {
+                ErrorMessage("To nie jest litera!");
+                return;
+            }
+
+            if (WasLetterEntered())
+            {
+                ErrorMessage("Znak był już wprowadzany!");
+                return;
+            }
+
+            else if (DidUserGuessedLetter())
                 DisclosureOfGuessedLetters();
 
             else
                 ++NumberOfUserErrors;
+
+            Console.Clear();
+            User_SelectedLetters.Add(PlayerLetter);
         }
 
         private void UserGivesLetter() =>
-            PlayerLetter = Console.ReadKey().KeyChar;
+            PlayerLetter = Console.ReadKey(true).KeyChar;
+
+        private void ErrorMessage(string Message)
+        {
+            Console.WriteLine(Message);
+            System.Threading.Thread.Sleep(1000);
+            Console.Clear();
+        }
+
+        private bool WasLetterEntered()
+        {
+            foreach (var item in User_SelectedLetters)
+                if (item == PlayerLetter)
+                    return true;
+
+            return false;
+        }
 
         private bool DidUserGuessedLetter()
         {
@@ -186,6 +222,12 @@ namespace MultiGry
                     tmp[i] = RandomWord[i];
                     GuessedLetters = tmp.ToString();
                 }
+        }
+
+        private void DisplayLettersSelectedByUser()
+        {
+            foreach (var item in User_SelectedLetters)
+                Console.Write(item + " ");
         }
 
         private void DisplayHangmanItems()
