@@ -17,6 +17,7 @@ namespace MultiGry
             options.Add(new GuessingPIN_Game());
             options.Add(new BinaryClockOption());
             options.Add(new HangmanGame());
+            options.Add(new TicTacToeGame());
             options.Add(new ExitOption());
 
             return options;
