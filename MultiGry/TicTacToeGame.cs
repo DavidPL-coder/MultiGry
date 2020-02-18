@@ -9,8 +9,8 @@ namespace MultiGry
     class TicTacToeGame : IMenuOption
     {
         public string NameOption => "Kółko i krzyżyk";
-        private enum GamerTurn { Circle = 1, Sharp }
-        private GamerTurn PlayerTurn;
+        private enum PlayerType { Nobody, Circle, Sharp }
+        private PlayerType PlayerTurn;
         private char[] Board =
         {
             '1', '2', '3',
@@ -24,46 +24,102 @@ namespace MultiGry
             TurnNumber = 1;
             DrawPlayer();
 
-            while (TurnNumber <= 9) // for tests, the loop is done 9 times!
+            /// TODO: the program displays a "Remis!" before starting the game. You have to fix it!
+
+            PlayerType Winner = 0;
+            while (TurnNumber <= 9 && Winner != PlayerType.Nobody) // for tests, the loop is done 9 times!
             {
                 DisplayPlayersTurn();
                 DisplayBoard();
                 PlayerIsSelectingField();
+                Winner = CheckingWhoWon();
                 ++TurnNumber;
                 Console.Clear();
             }
+
+            if (Winner == PlayerType.Circle)
+                Console.WriteLine("Wygrało kółko!");
+
+            if (Winner == PlayerType.Sharp)
+                Console.WriteLine("Wygrał krzyżyk!");
+
+            if (Winner == 0)
+                Console.WriteLine("Remis!");
+
+            Console.ReadKey();
 
             var ProgramExecution = new DecisionOnFurtherCourseOfProgram(this);
             return ProgramExecution.UserDecidesWhatToDoNext();
         }
 
-        private void PlayerIsSelectingField()
+        private PlayerType CheckingWhoWon()
         {
-            char FieldNumberSelected = Console.ReadKey(true).KeyChar;
+            PlayerType Horizontal = CheckingWhoWonHorizontally();
+            PlayerType Vertical = CCheckingWhoWonVertically();
+            PlayerType Diagonal = CheckingWhoWonDiagonally();
 
-            if (char.IsDigit(FieldNumberSelected) && FieldNumberSelected != '0')
+            if (Horizontal != 0)
+                return Horizontal;
+
+            if (Vertical != 0)
+                return Vertical;
+
+            if (Diagonal != 0)
+                return Diagonal;
+
+            return PlayerType.Nobody;
+        }
+
+        private PlayerType CheckingWhoWonHorizontally()
+        {
+            for (int i = 0; i <= 6; i += 3)
             {
-                int Index = (FieldNumberSelected - '0') - 1;
-                Board[Index] = (PlayerTurn == GamerTurn.Circle ? 'o' : 'x');
-                PlayerTurn = (PlayerTurn == GamerTurn.Circle ? GamerTurn.Sharp : GamerTurn.Circle);
+                if (Board[i] == 'x' && Board[i + 1] == 'x' && Board[i + 2] == 'x')
+                    return PlayerType.Sharp;
+
+                if (Board[i] == 'o' && Board[i + 1] == 'o' && Board[i + 2] == 'o')
+                    return PlayerType.Circle;
             }
 
-            else
+            return PlayerType.Nobody;
+        }
+
+        private PlayerType CCheckingWhoWonVertically()
+        {
+            for (int i = 0; i < 3; ++i)
             {
-                Console.WriteLine("Numerki pola są od 1 do 9!");
-                System.Threading.Thread.Sleep(1500);
+                if (Board[i] == 'x' && Board[i + 3] == 'x' && Board[i + 6] == 'x')
+                    return PlayerType.Sharp;
+
+                if (Board[i] == 'o' && Board[i + 3] == 'o' && Board[i + 6] == 'o')
+                    return PlayerType.Circle;
             }
+
+            return PlayerType.Nobody;
+        }
+
+        private PlayerType CheckingWhoWonDiagonally()
+        {
+            if (( Board[0] == 'x' && Board[4] == 'x' && Board[8] == 'x' ) ||
+                ( Board[2] == 'x' && Board[4] == 'x' && Board[6] == 'x' ))
+                return PlayerType.Sharp;
+
+            if (( Board[0] == 'o' && Board[4] == 'o' && Board[8] == 'o' ) ||
+                ( Board[2] == 'o' && Board[4] == 'o' && Board[6] == 'o' ))
+                return PlayerType.Circle;
+
+            return PlayerType.Nobody;
         }
 
         private void DrawPlayer()
         {
             var Random = new Random();
-            PlayerTurn = (GamerTurn) Random.Next(1, 3);
+            PlayerTurn = (PlayerType) Random.Next(1, 3);
         }
 
         private void DisplayPlayersTurn()
         {
-            string Gamer = (PlayerTurn == GamerTurn.Circle ? "kółko" : "krzyżyk");
+            string Gamer = ( PlayerTurn == PlayerType.Circle ? "kółko" : "krzyżyk" );
             Console.WriteLine("Tura gracza: " + Gamer);
         }
 
@@ -77,5 +133,43 @@ namespace MultiGry
             Console.WriteLine("| {0} | {1} | {2} |", Board[6], Board[7], Board[8]);
             Console.WriteLine("+---+---+---+");
         }
+
+        private void PlayerIsSelectingField()
+        {
+            try
+            {
+                TryPlayerIsSelectingField();
+            }
+            catch (InvalidOperationException InvalidFieldNumberException)
+            {
+                Console.WriteLine(InvalidFieldNumberException.Message);
+                System.Threading.Thread.Sleep(1500);
+                --TurnNumber;
+            }
+        }
+
+        private void TryPlayerIsSelectingField()
+        {
+            char FieldNumberSelected = Console.ReadKey(true).KeyChar;
+
+            if (IsGivenLetterNumberBetween1And9(FieldNumberSelected))
+            {
+                int FieldIndex = ( FieldNumberSelected - '0' ) - 1;
+                if (IsntFieldBlank(FieldIndex))
+                    throw new InvalidOperationException("To pole było już wcześniej wybrane!");
+
+                Board[FieldIndex] = ( PlayerTurn == PlayerType.Circle ? 'o' : 'x' );
+                PlayerTurn = ( PlayerTurn == PlayerType.Circle ? PlayerType.Sharp : PlayerType.Circle );
+            }
+
+            else
+                throw new InvalidOperationException("Numerki pola są od 1 do 9!");
+        }
+
+        private bool IsGivenLetterNumberBetween1And9(char FieldNumberSelected) =>
+            char.IsDigit(FieldNumberSelected) && FieldNumberSelected != '0';
+
+        private bool IsntFieldBlank(int FieldIndex) =>
+            Board[FieldIndex] == 'x' || Board[FieldIndex] == 'o';
     }
 }
