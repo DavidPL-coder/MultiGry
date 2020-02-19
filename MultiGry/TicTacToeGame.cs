@@ -9,48 +9,111 @@ namespace MultiGry
     class TicTacToeGame : IMenuOption
     {
         public string NameOption => "Kółko i krzyżyk";
+        private int TurnNumber;
         private enum PlayerType { Nobody, Circle, Sharp }
         private PlayerType PlayerTurn;
-        private char[] Board =
-        {
-            '1', '2', '3',
-            '4', '5', '6',
-            '7', '8', '9'
-        };
-        private int TurnNumber;
+        private PlayerType Winner;
+        private char[] Board;
 
         public OptionsCategory OptionExecuting()
         {
-            TurnNumber = 1;
-            DrawPlayer();
+            SetDefaults();
+            while (IsGameStillGoingOn())
+                PlayingOneTurn();
 
-            /// TODO: the program displays a "Remis!" before starting the game. You have to fix it!
-
-            PlayerType Winner = 0;
-            while (TurnNumber <= 9 && Winner != PlayerType.Nobody) // for tests, the loop is done 9 times!
-            {
-                DisplayPlayersTurn();
-                DisplayBoard();
-                PlayerIsSelectingField();
-                Winner = CheckingWhoWon();
-                ++TurnNumber;
-                Console.Clear();
-            }
-
-            if (Winner == PlayerType.Circle)
-                Console.WriteLine("Wygrało kółko!");
-
-            if (Winner == PlayerType.Sharp)
-                Console.WriteLine("Wygrał krzyżyk!");
-
-            if (Winner == 0)
-                Console.WriteLine("Remis!");
-
+            DisplayResult();
             Console.ReadKey();
 
             var ProgramExecution = new DecisionOnFurtherCourseOfProgram(this);
             return ProgramExecution.UserDecidesWhatToDoNext();
         }
+
+        private void SetDefaults()
+        {
+            TurnNumber = 1;
+            DrawPlayer();
+            Winner = PlayerType.Nobody;
+            Board = new char[]
+            {
+                '1', '2', '3',
+                '4', '5', '6',
+                '7', '8', '9'
+            };
+        }
+
+        private void DrawPlayer()
+        {
+            var Random = new Random();
+            PlayerTurn = (PlayerType) Random.Next(1, 3);    // draws "Circle" or "Sharp"
+        }
+
+        private bool IsGameStillGoingOn() =>
+            TurnNumber <= 9 && Winner == PlayerType.Nobody;
+
+        private void PlayingOneTurn()
+        {
+            DisplayPlayersTurn();
+            DisplayBoard();
+            PlayerIsSelectingField();
+            Winner = CheckingWhoWon();
+            ++TurnNumber;
+            Console.Clear();
+        }
+
+        private void DisplayPlayersTurn()
+        {
+            string Gamer = (PlayerTurn == PlayerType.Circle ? "kółko" : "krzyżyk");
+            Console.WriteLine("Tura gracza: " + Gamer);
+        }
+
+        private void DisplayBoard()
+        {
+            Console.WriteLine("+---+---+---+");
+            Console.WriteLine("| {0} | {1} | {2} |", Board[0], Board[1], Board[2]);
+            Console.WriteLine("+---+---+---+");
+            Console.WriteLine("| {0} | {1} | {2} |", Board[3], Board[4], Board[5]);
+            Console.WriteLine("+---+---+---+");
+            Console.WriteLine("| {0} | {1} | {2} |", Board[6], Board[7], Board[8]);
+            Console.WriteLine("+---+---+---+");
+        }
+
+        private void PlayerIsSelectingField()
+        {
+            try
+            {
+                TryPlayerIsSelectingField();
+            }
+            catch (InvalidOperationException InvalidFieldNumberException)
+            {
+                Console.WriteLine(InvalidFieldNumberException.Message);
+                System.Threading.Thread.Sleep(1500);
+                --TurnNumber;
+            }
+        }
+
+        private void TryPlayerIsSelectingField()
+        {
+            char FieldNumberSelected = Console.ReadKey(true).KeyChar;
+
+            if (IsGivenLetterNumberBetween1And9(FieldNumberSelected))
+            {
+                int FieldIndex = (FieldNumberSelected - '0') - 1;
+                if (IsntFieldBlank(FieldIndex))
+                    throw new InvalidOperationException("To pole było już wcześniej wybrane!");
+
+                Board[FieldIndex] = (PlayerTurn == PlayerType.Circle ? 'o' : 'x');
+                PlayerTurn = (PlayerTurn == PlayerType.Circle ? PlayerType.Sharp : PlayerType.Circle);
+            }
+
+            else
+                throw new InvalidOperationException("Numerki pola są od 1 do 9!");
+        }
+
+        private bool IsGivenLetterNumberBetween1And9(char FieldNumberSelected) =>
+            char.IsDigit(FieldNumberSelected) && FieldNumberSelected != '0';
+
+        private bool IsntFieldBlank(int FieldIndex) =>
+            Board[FieldIndex] == 'x' || Board[FieldIndex] == 'o';
 
         private PlayerType CheckingWhoWon()
         {
@@ -111,65 +174,18 @@ namespace MultiGry
             return PlayerType.Nobody;
         }
 
-        private void DrawPlayer()
+        private void DisplayResult()
         {
-            var Random = new Random();
-            PlayerTurn = (PlayerType) Random.Next(1, 3);
-        }
+            if (Winner == PlayerType.Circle)
+                Console.WriteLine("Wygrało kółko!");
 
-        private void DisplayPlayersTurn()
-        {
-            string Gamer = ( PlayerTurn == PlayerType.Circle ? "kółko" : "krzyżyk" );
-            Console.WriteLine("Tura gracza: " + Gamer);
-        }
-
-        private void DisplayBoard()
-        {
-            Console.WriteLine("+---+---+---+");
-            Console.WriteLine("| {0} | {1} | {2} |", Board[0], Board[1], Board[2]);
-            Console.WriteLine("+---+---+---+");
-            Console.WriteLine("| {0} | {1} | {2} |", Board[3], Board[4], Board[5]);
-            Console.WriteLine("+---+---+---+");
-            Console.WriteLine("| {0} | {1} | {2} |", Board[6], Board[7], Board[8]);
-            Console.WriteLine("+---+---+---+");
-        }
-
-        private void PlayerIsSelectingField()
-        {
-            try
-            {
-                TryPlayerIsSelectingField();
-            }
-            catch (InvalidOperationException InvalidFieldNumberException)
-            {
-                Console.WriteLine(InvalidFieldNumberException.Message);
-                System.Threading.Thread.Sleep(1500);
-                --TurnNumber;
-            }
-        }
-
-        private void TryPlayerIsSelectingField()
-        {
-            char FieldNumberSelected = Console.ReadKey(true).KeyChar;
-
-            if (IsGivenLetterNumberBetween1And9(FieldNumberSelected))
-            {
-                int FieldIndex = ( FieldNumberSelected - '0' ) - 1;
-                if (IsntFieldBlank(FieldIndex))
-                    throw new InvalidOperationException("To pole było już wcześniej wybrane!");
-
-                Board[FieldIndex] = ( PlayerTurn == PlayerType.Circle ? 'o' : 'x' );
-                PlayerTurn = ( PlayerTurn == PlayerType.Circle ? PlayerType.Sharp : PlayerType.Circle );
-            }
+            if (Winner == PlayerType.Sharp)
+                Console.WriteLine("Wygrał krzyżyk!");
 
             else
-                throw new InvalidOperationException("Numerki pola są od 1 do 9!");
-        }
+                Console.WriteLine("Remis!");
 
-        private bool IsGivenLetterNumberBetween1And9(char FieldNumberSelected) =>
-            char.IsDigit(FieldNumberSelected) && FieldNumberSelected != '0';
-
-        private bool IsntFieldBlank(int FieldIndex) =>
-            Board[FieldIndex] == 'x' || Board[FieldIndex] == 'o';
+            DisplayBoard();
+        }  
     }
 }
