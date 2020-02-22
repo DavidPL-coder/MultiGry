@@ -8,11 +8,13 @@ using System.Diagnostics;
 
 namespace MultiGry
 {
+    // for encrypting files, the Caesar cipher was used
     class FilesEncryptionOption : IMenuOption
     {
         public string NameOption => "(De)Szyfrowanie plików";
         private char OptionNumberSelectedByUser;
         private string FilePath;
+        private Encryption.Operations Operation;       
 
         public OptionsCategory OptionExecuting()
         { 
@@ -53,6 +55,18 @@ namespace MultiGry
                     ReadFile();
                     break;
 
+                case '3':
+                    FileEncryption();
+                    break;
+
+                case '4':
+                    FileDecryption();
+                    break;
+
+                case '5':
+                    ReadEncryptedFile();
+                    break;
+
                 case '6':
                     EditingFileUsingNotebook();
                     break;
@@ -90,7 +104,13 @@ namespace MultiGry
 
             if (File.Exists(FilePath))
             {
-                ReadingLinesFromFile();
+                var TextFromFile = new List<string>();
+                ReadFataFromFile(TextFromFile);
+
+                Console.WriteLine("Zawartość pliku: ");
+                foreach (var item in TextFromFile)
+                    Console.WriteLine(item);
+
                 Console.ReadKey();
             }
 
@@ -98,16 +118,90 @@ namespace MultiGry
                 DisplayMessage("Podany plik nie istnieje!");
         }
 
-        private void ReadingLinesFromFile()
+        private void ReadFataFromFile(List<string> TextFromFile)
         {
             using (var streamReader = new StreamReader(FilePath, Encoding.GetEncoding("Windows-1250")))
             {
-                Console.WriteLine("Zawartość pliku: ");
-
                 string tmp;
                 while (( tmp = streamReader.ReadLine() ) != null)
-                    Console.WriteLine(tmp);
+                    TextFromFile.Add(tmp);
             }
+        }
+
+        private void FileEncryption()
+        {
+            Operation = Encryption.Operations.Encryption;
+            FileEncoding();
+        }
+
+        private void FileDecryption()
+        {
+            Operation = Encryption.Operations.Decryption;
+            FileEncoding();
+        }
+
+        private void FileEncoding()
+        {
+            UserProvidesPathToFile();           
+
+            if (File.Exists(FilePath))
+            {
+                var TextFromFile = new List<string>();
+                ReadFataFromFile(TextFromFile);
+                EncodeFile(TextFromFile);
+                DisplayingMessageAboutEncodingCompleted();
+                Console.ReadKey();
+            }
+
+            else
+                DisplayMessage("Podany plik nie istnieje!");
+        }
+
+        private void EncodeFile(List<string> TextFromFile)
+        {
+            var encryption = new Encryption();
+            using (var streamWriter = new StreamWriter(FilePath, false, Encoding.GetEncoding("Windows-1250")))
+            {
+                for (int i = 0; i < TextFromFile.Count; ++i)
+                {
+                    if (Operation == Encryption.Operations.Encryption)
+                        streamWriter.WriteLine(encryption.EncryptingText(TextFromFile[i]));
+
+                    else
+                        streamWriter.WriteLine(encryption.DecryptingText(TextFromFile[i]));
+                }
+            }
+        }
+
+        private void DisplayingMessageAboutEncodingCompleted()
+        {
+            if (Operation == Encryption.Operations.Encryption)
+                Console.WriteLine("Zaszyfrowano plik!");
+
+            else
+                Console.WriteLine("Odkodowano plik!");
+        }
+
+        private void ReadEncryptedFile()
+        {
+            UserProvidesPathToFile();
+
+            if (File.Exists(FilePath))
+            {
+                Operation = Encryption.Operations.Decryption;
+                var TextFromFile = new List<string>();
+                ReadFataFromFile(TextFromFile);
+
+                Console.WriteLine("Odszyfrowana zawartość pliku:");
+                var decryption = new Encryption();
+                for (int i = 0; i < TextFromFile.Count; ++i)
+                    Console.WriteLine(decryption.DecryptingText(TextFromFile[i]));
+
+                Console.ReadKey();
+            }
+
+            else
+                DisplayMessage("Podany plik nie istnieje!");
         }
 
         private void EditingFileUsingNotebook()
