@@ -14,19 +14,29 @@ namespace MultiGry
         public string NameOption => "(De)Szyfrowanie plików";
         private char OptionNumberSelectedByUser;
         private string FilePath;
-        private Encryption.Operations Operation;       
+        private TextEncoder.Operations Operation;
+        private List<string> TextFromFile;
+        private TextEncoder textEncoder;
+
+        public FilesEncryptionOption()
+        {
+            TextFromFile = new List<string>();
+            textEncoder = new TextEncoder();
+        }
 
         public OptionsCategory OptionExecuting()
-        { 
+        {
             do
             {
                 DisplayOptions();
                 UserSelectsOptions();
+                TextFromFile.Clear();
             }
             while (OptionNumberSelectedByUser != '7');
 
             return OptionsCategory.NormalOption;
         }
+
 
         private void DisplayOptions()
         {
@@ -47,29 +57,12 @@ namespace MultiGry
 
             switch (OptionNumberSelectedByUser)
             {
-                case '1':
-                    FileCreation();
-                    break;
-
-                case '2':
-                    ReadFile();
-                    break;
-
-                case '3':
-                    FileEncryption();
-                    break;
-
-                case '4':
-                    FileDecryption();
-                    break;
-
-                case '5':
-                    ReadEncryptedFile();
-                    break;
-
-                case '6':
-                    EditingFileUsingNotebook();
-                    break;
+                case '1': FileCreation(); break;
+                case '2': ReadFile(); break;
+                case '3': FileEncryption(); break;
+                case '4': FileDecryption(); break;
+                case '5': ReadEncryptedFile(); break;
+                case '6': EditingFileUsingNotebook(); break;
             }
         }
 
@@ -103,22 +96,20 @@ namespace MultiGry
             UserProvidesPathToFile(MessageToUser: "Podaj nazwę pliku (lub ścieżkę względną):");
 
             if (File.Exists(FilePath))
-            {
-                var TextFromFile = new List<string>();
-                ReadFataFromFile(TextFromFile);
-
-                Console.WriteLine("Zawartość pliku: ");
-                foreach (var item in TextFromFile)
-                    Console.WriteLine(item);
-
-                Console.ReadKey();
-            }
+                ReadContentsOfFile();
 
             else
                 DisplayMessage("Podany plik nie istnieje!");
         }
 
-        private void ReadFataFromFile(List<string> TextFromFile)
+        private void ReadContentsOfFile()
+        {
+            ReadDataFromFile();
+            DisplayFileContents();
+            Console.ReadKey();
+        }
+
+        private void ReadDataFromFile()
         {
             using (var streamReader = new StreamReader(FilePath, Encoding.GetEncoding("Windows-1250")))
             {
@@ -128,54 +119,60 @@ namespace MultiGry
             }
         }
 
+        private void DisplayFileContents()
+        {
+            Console.WriteLine("Zawartość pliku: ");
+            foreach (var item in TextFromFile)
+                Console.WriteLine(item);
+        }
+
         private void FileEncryption()
         {
-            Operation = Encryption.Operations.Encryption;
+            Operation = TextEncoder.Operations.Encryption;
             FileEncoding();
         }
 
         private void FileDecryption()
         {
-            Operation = Encryption.Operations.Decryption;
+            Operation = TextEncoder.Operations.Decryption;
             FileEncoding();
         }
 
         private void FileEncoding()
         {
-            UserProvidesPathToFile();           
+            UserProvidesPathToFile();
 
             if (File.Exists(FilePath))
-            {
-                var TextFromFile = new List<string>();
-                ReadFataFromFile(TextFromFile);
-                EncodeFile(TextFromFile);
-                DisplayingMessageAboutEncodingCompleted();
-                Console.ReadKey();
-            }
+                FileContentEncoding();
 
             else
                 DisplayMessage("Podany plik nie istnieje!");
         }
 
-        private void EncodeFile(List<string> TextFromFile)
+        private void FileContentEncoding()
         {
-            var encryption = new Encryption();
+            ReadDataFromFile();
+            EncodeFile();
+            DisplayingMessageAboutEncodingCompleted();
+            Console.ReadKey();
+        }
+
+        private void EncodeFile()
+        {
             using (var streamWriter = new StreamWriter(FilePath, false, Encoding.GetEncoding("Windows-1250")))
             {
-                for (int i = 0; i < TextFromFile.Count; ++i)
+                foreach (var item in TextFromFile)
                 {
-                    if (Operation == Encryption.Operations.Encryption)
-                        streamWriter.WriteLine(encryption.EncryptingText(TextFromFile[i]));
-
-                    else
-                        streamWriter.WriteLine(encryption.DecryptingText(TextFromFile[i]));
+                    string TextToSaveToFile = (Operation == TextEncoder.Operations.Encryption) ? textEncoder.EncryptingText(item)
+                                                                                               : textEncoder.DecryptingText(item);
+                    streamWriter.WriteLine(TextToSaveToFile);
                 }
             }
         }
 
         private void DisplayingMessageAboutEncodingCompleted()
         {
-            if (Operation == Encryption.Operations.Encryption)
+            if (Operation == TextEncoder.Operations.Encryption)
                 Console.WriteLine("Zaszyfrowano plik!");
 
             else
@@ -187,21 +184,22 @@ namespace MultiGry
             UserProvidesPathToFile();
 
             if (File.Exists(FilePath))
-            {
-                Operation = Encryption.Operations.Decryption;
-                var TextFromFile = new List<string>();
-                ReadFataFromFile(TextFromFile);
-
-                Console.WriteLine("Odszyfrowana zawartość pliku:");
-                var decryption = new Encryption();
-                for (int i = 0; i < TextFromFile.Count; ++i)
-                    Console.WriteLine(decryption.DecryptingText(TextFromFile[i]));
-
-                Console.ReadKey();
-            }
+                ReadEncryptedFileContent();
 
             else
                 DisplayMessage("Podany plik nie istnieje!");
+        }
+
+        private void ReadEncryptedFileContent()
+        {
+            Operation = TextEncoder.Operations.Decryption;
+            ReadDataFromFile();
+
+            Console.WriteLine("Odszyfrowana zawartość pliku:");
+            foreach (var item in TextFromFile)
+                Console.WriteLine(textEncoder.DecryptingText(item));
+
+            Console.ReadKey();
         }
 
         private void EditingFileUsingNotebook()

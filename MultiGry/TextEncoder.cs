@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace MultiGry
 {
     // for encrypting files, the Caesar cipher was used
-    class Encryption
+    class TextEncoder
     {
         string EncryptedText;
         public enum Operations
