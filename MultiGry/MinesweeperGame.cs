@@ -23,9 +23,9 @@ namespace MultiGry
 
             while (IsGameStillGoingOn())
             {
-                DisplayBoard(); 
+                DisplayBoard();
 
-                if (RoundNumber == 1)                    
+                if (RoundNumber == 1)
                     StartingGame();
 
                 else
@@ -49,25 +49,74 @@ namespace MultiGry
         private void StartingGame()
         {
             DisplayFieldIndexQuery();
-            string[] IndexesOfFieldSelectedByUser = Console.ReadLine().Split();
+            string[] SelectedIndexes = Console.ReadLine().Split();
 
-            if (IndexesOfFieldSelectedByUser.Length != 2)
+            if (SelectedIndexes.Length != 2)
             {
                 Console.WriteLine("Wprowadzono nieprawidłowe wartości!");
             }
 
             else
             {
+                var Random = new Random();
+
                 for (int i = 0; i < 10; ++i)
                 {
-                    var Random = new Random();
                     int Vertical = Random.Next(0, VerticalDimensionOfBoard);
                     int Horizontal = Random.Next(0, HorizontalDimensionOfBoard);
 
                     ActualBoardContent[Vertical, Horizontal] = '⁕';
                 }
+
+                var IndexesOfSelectedField = new int[]
+                {
+                    int.Parse(SelectedIndexes[0]),
+                    int.Parse(SelectedIndexes[1])
+                };
+
+                bool AreFieldsToBeUncoveredUpwards = Random.Next(0, 2) == 1;
+                bool AreFieldsToBeUncoveredLeft = Random.Next(0, 2) == 1;
+
+                int VerticalIndexOfBeginningOfSquare;
+                int HorizontalIndexOfBeginningOfSquare;
+                int VerticalIndexOfEndOfSquare;
+                int HorizontalIndexOfEndOfSquare;
+
+                if (AreFieldsToBeUncoveredUpwards)
+                {
+                    VerticalIndexOfBeginningOfSquare = (IndexesOfSelectedField[0] - 2) < 0 ? 0 : (IndexesOfSelectedField[0] - 2);
+                    VerticalIndexOfEndOfSquare = IndexesOfSelectedField[0];
+                }
+
+                else
+                {
+                    VerticalIndexOfBeginningOfSquare = IndexesOfSelectedField[0];
+                    VerticalIndexOfEndOfSquare = (IndexesOfSelectedField[0] + 2) > 7 ? 7 : (IndexesOfSelectedField[0] + 2);
+                }
+
+                if (AreFieldsToBeUncoveredLeft)
+                {
+                    HorizontalIndexOfBeginningOfSquare = (IndexesOfSelectedField[1] - 2) < 0 ? 0 : (IndexesOfSelectedField[1] - 2);
+                    HorizontalIndexOfEndOfSquare = IndexesOfSelectedField[1];
+                }
+
+                else
+                {
+                    HorizontalIndexOfBeginningOfSquare = IndexesOfSelectedField[1];
+                    HorizontalIndexOfEndOfSquare = (IndexesOfSelectedField[1] + 2) > 7 ? 7 : (IndexesOfSelectedField[1] + 2);
+                }
+
+                for (int i = VerticalIndexOfBeginningOfSquare; i <= VerticalIndexOfEndOfSquare; ++i)
+                {
+                    for (int j = HorizontalIndexOfBeginningOfSquare; j < HorizontalIndexOfEndOfSquare; ++j)
+                    {
+                        if (ActualBoardContent[i, j] != '⁕')
+                            DisplayedBoard[i, j] = ActualBoardContent[i, j];
+                    }
+                }
+
             }
-                
+
         }
 
         private void SetBoard()
@@ -81,7 +130,7 @@ namespace MultiGry
                 {
                     DisplayedBoard[i, j] = '■';
                     ActualBoardContent[i, j] = '☐';
-                }     
+                }
             }
         }
 
@@ -94,7 +143,7 @@ namespace MultiGry
             Console.WriteLine("  - - - - - - - -");
             for (int i = 0; i < VerticalDimensionOfBoard; ++i)
             {
-                Console.Write((i + 1) + "|");
+                Console.Write(( i + 1 ) + "|");
                 for (int j = 0; j < HorizontalDimensionOfBoard; ++j)
                     Console.Write(DisplayedBoard[i, j] + " ");
 
