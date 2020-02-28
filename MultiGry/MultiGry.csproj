@@ -45,6 +45,7 @@
   <ItemGroup>
     <Compile Include="BinaryClockOption.cs" />
     <Compile Include="ChangeTextColorOption.cs" />
+    <Compile Include="MinesweeperGame.cs" />
     <Compile Include="TextEncoder.cs" />
     <Compile Include="FilesEncryptionOption.cs" />
     <Compile Include="GuessingNumbersGame.cs" />

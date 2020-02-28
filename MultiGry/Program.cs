@@ -20,6 +20,7 @@ namespace MultiGry
             options.Add(new TicTacToeGame());
             options.Add(new FilesEncryptionOption());
             options.Add(new ChangeTextColorOption());
+            options.Add(new MinesweeperGame());
             options.Add(new ExitOption());
 
             return options;
