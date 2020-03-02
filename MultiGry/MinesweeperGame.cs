@@ -28,35 +28,17 @@ namespace MultiGry
         }
         Rect StartSquareOfExposedFields;
 
-        //private int Top;
-        //private int Left;
-        //private int Bottom;
-        //private int Right;
-
         public OptionsCategory OptionExecuting()
         {
-            RightTextColor = Console.ForegroundColor;
-            IsThereFirstRound = true;
-            SetBoard();
-            CoordinatesOfMinesDrawn = new List<Tuple<int, int>>();
-            NumberGenerator = new Random();
-
+            SetDefaults();
             while (IsGameStillGoingOn())
             {
                 DisplayBoard();
-                try
-                {
-                    if (IsThereFirstRound)
-                        StartingGame();
+                if (IsThereFirstRound)
+                    StartingGame();
 
-                    else
-                        PlayingRound();
-                }
-                catch 
-                {
-                    Console.WriteLine("sdhdshhdfshdshf");
-                }
-                
+                else
+                    PlayingRound();
 
                 Console.ReadKey();
             }
@@ -65,181 +47,13 @@ namespace MultiGry
             return ProgramExecution.UserDecidesWhatToDoNext();
         }
 
-        private bool IsGameStillGoingOn()
+        private void SetDefaults()
         {
-            return true;
-        }
-
-        private void PlayingRound()
-        {
-            Console.WriteLine();
-        }
-
-        private void StartingGame()
-        {
-            DisplayFieldIndexQuery();
-            SelectedIndexesInTextVersion = Console.ReadLine().Split();
-
-            if (CheckSelectedIndexes())
-            {
-                SetIndexesOfSelectedField();
-                SetMinesOnBoard();
-
-                SetTopAndBottomOfSquare(AreFieldsToBeUncoveredUpwards: NumberGenerator.Next(0, 2) == 1);
-                SetLeftAndRightOfSquare(AreFieldsToBeUncoveredLeft: NumberGenerator.Next(0, 2) == 1);
-
-                //LoadEmptyFieldsIntoDisplayedBoard();
-
-                LoadNumberOfMinesIntoDisplayedBoard();
-
-                DisplayBoard();
-                IsThereFirstRound = false;
-            }
-
-            else
-            {
-                Console.WriteLine("Wprowadzono nieprawidłowe wartości!");
-                System.Threading.Thread.Sleep(1500);
-            }
-
-        }
-
-        private void LoadNumberOfMinesIntoDisplayedBoard()
-        {
-            for (int i = StartSquareOfExposedFields.Top; i <= StartSquareOfExposedFields.Bottom; ++i)
-            {
-                for (int j = StartSquareOfExposedFields.Left; j <= StartSquareOfExposedFields.Right; ++j)
-                {
-                    int NumberDisplayedInGivenField = 0;
-                    if (ActualBoardContent[i, j] != '*')
-                    {
-                        if (i - 1 >= 0 && j - 1 >= 0 && ActualBoardContent[i - 1, j - 1] == '*')
-                            ++NumberDisplayedInGivenField;
-
-                        if (i - 1 >= 0 && ActualBoardContent[i - 1, j] == '*')
-                            ++NumberDisplayedInGivenField;
-
-                        if (i - 1 >= 0 && j + 1 <= 7 && ActualBoardContent[i - 1, j + 1] == '*')
-                            ++NumberDisplayedInGivenField;
-
-                        if (j - 1 >= 0 && ActualBoardContent[i, j - 1] == '*')
-                            ++NumberDisplayedInGivenField;
-
-                        if (j + 1 <= 7 && ActualBoardContent[i, j + 1] == '*')
-                            ++NumberDisplayedInGivenField;
-
-                        if (i + 1 <= 7 && j - 1 >= 0 && ActualBoardContent[i + 1, j - 1] == '*')
-                            ++NumberDisplayedInGivenField;
-
-                        if (i + 1 <= 7 && ActualBoardContent[i + 1, j] == '*')
-                            ++NumberDisplayedInGivenField;
-
-                        if (i + 1 <= 7 && j + 1 <= 7 && ActualBoardContent[i + 1, j + 1] == '*')
-                            ++NumberDisplayedInGivenField;
-                    }
-
-                    if (NumberDisplayedInGivenField != 0)
-                        DisplayedBoard[i, j] = NumberDisplayedInGivenField.ToString()[0];
-
-                    else
-                        DisplayedBoard[i, j] = 'O';
-                }
-            }
-        }
-
-        //private void LoadEmptyFieldsIntoDisplayedBoard()
-        //{
-        //    for (int i = StartSquareOfExposedFields.Top; i <= StartSquareOfExposedFields.Bottom; ++i)
-        //    {
-        //        for (int j = StartSquareOfExposedFields.Left; j <= StartSquareOfExposedFields.Right; ++j)
-        //        {
-        //            if (ActualBoardContent[i, j] != '*')
-        //                DisplayedBoard[i, j] = ActualBoardContent[i, j];
-        //        }
-        //    }
-        //}
-
-        private void SetLeftAndRightOfSquare(bool AreFieldsToBeUncoveredLeft)
-        {
-            if (AreFieldsToBeUncoveredLeft)
-            {
-                StartSquareOfExposedFields.Left = ( IndexesOfSelectedField.Item2 - 2 ) < 0 ? 0 : ( IndexesOfSelectedField.Item2 - 2 );
-                StartSquareOfExposedFields.Right = IndexesOfSelectedField.Item2;
-            }
-
-            else
-            {
-                StartSquareOfExposedFields.Left = IndexesOfSelectedField.Item2;
-                StartSquareOfExposedFields.Right = ( IndexesOfSelectedField.Item2 + 2 ) > 7 ? 7 : ( IndexesOfSelectedField.Item2 + 2 );
-            }
-        }
-
-        private void SetTopAndBottomOfSquare(bool AreFieldsToBeUncoveredUpwards)
-        {
-            if (AreFieldsToBeUncoveredUpwards)
-            {
-                StartSquareOfExposedFields.Top = ( IndexesOfSelectedField.Item1 - 2 ) < 0 ? 0 : ( IndexesOfSelectedField.Item1 - 2 );
-                StartSquareOfExposedFields.Bottom = IndexesOfSelectedField.Item1;
-            }
-
-            else
-            {
-                StartSquareOfExposedFields.Top = IndexesOfSelectedField.Item1;
-                StartSquareOfExposedFields.Bottom = ( IndexesOfSelectedField.Item1 + 2 ) > 7 ? 7 : ( IndexesOfSelectedField.Item1 + 2 );
-            }
-        }
-
-        private void SetMinesOnBoard()
-        {
-            for (int i = 0; i < 10; ++i)
-            {
-                int Vertical = NumberGenerator.Next(0, VerticalDimensionOfBoard);
-                int Horizontal = NumberGenerator.Next(0, HorizontalDimensionOfBoard);
-                var CoordinatePair = Tuple.Create(Vertical, Horizontal);
-
-                if (CanMineBeInThisField(CoordinatePair))
-                {
-                    ActualBoardContent[Vertical, Horizontal] = '*';
-                    CoordinatesOfMinesDrawn.Add(CoordinatePair);
-                }
-
-                else
-                    --i;
-            }
-        }
-
-        private void SetIndexesOfSelectedField()
-        {
-            IndexesOfSelectedField = Tuple.Create(int.Parse(SelectedIndexesInTextVersion[0]) - 1,
-                                                  int.Parse(SelectedIndexesInTextVersion[1]) - 1);
-        }
-
-        private bool CanMineBeInThisField(Tuple<int, int> CoordinatePair)
-        {
-            for (int j = 0; j < CoordinatesOfMinesDrawn.Count; ++j)
-                if (Equals(CoordinatesOfMinesDrawn[j], CoordinatePair) || Equals(CoordinatesOfMinesDrawn[j], IndexesOfSelectedField))
-                    return false;
-
-            return true;
-        }
-
-        private bool CheckSelectedIndexes()
-        {
-            if (SelectedIndexesInTextVersion.Length != 2)
-                return false;
-
-            else
-                return CheckIfNumbersBetween1And8AreGiven();
-        }
-
-        private bool CheckIfNumbersBetween1And8AreGiven()
-        {
-            if (!int.TryParse(SelectedIndexesInTextVersion[0], out _) || !int.TryParse(SelectedIndexesInTextVersion[1], out _))
-                return false;
-
-            else
-                return int.Parse(SelectedIndexesInTextVersion[0]) >= 1 && int.Parse(SelectedIndexesInTextVersion[0]) <= 8 &&
-                       int.Parse(SelectedIndexesInTextVersion[1]) >= 1 && int.Parse(SelectedIndexesInTextVersion[1]) <= 8;
+            RightTextColor = Console.ForegroundColor;
+            IsThereFirstRound = true;
+            SetBoard();
+            CoordinatesOfMinesDrawn = new List<Tuple<int, int>>();
+            NumberGenerator = new Random();
         }
 
         private void SetBoard()
@@ -257,21 +71,35 @@ namespace MultiGry
             }
         }
 
+        private bool IsGameStillGoingOn()
+        {
+            return true;
+        }
+
         private void DisplayBoard()
         {
             Console.ForegroundColor = ConsoleColor.White;
-            Console.Clear();
 
+            Console.Clear();
+            Console.WriteLine("  1 2 3 4 5 6 7 8");
+            Console.WriteLine("  - - - - - - - -");
             DisplayVerticalBoardLines();
+
+            for (int i = 0; i < 8; i++)
+            {
+                for (int j = 0; j < 8; j++)
+                {
+                    Console.Write(ActualBoardContent[i, j] + " ");
+                }
+
+                Console.WriteLine();
+            }
 
             Console.ForegroundColor = RightTextColor;
         }
 
         private void DisplayVerticalBoardLines()
         {
-            Console.WriteLine("  1 2 3 4 5 6 7 8");
-            Console.WriteLine("  - - - - - - - -");
-
             for (int i = 0; i < VerticalDimensionOfBoard; ++i)
             {
                 Console.Write(i + 1 + "|");
@@ -301,10 +129,175 @@ namespace MultiGry
             }
         }
 
+        private void StartingGame()
+        {
+            DisplayFieldIndexQuery();
+            SelectedIndexesInTextVersion = Console.ReadLine().Split();
+
+            if (CheckSelectedIndexes())
+                PreparingToPlayGame();
+
+            else
+                DisplayMessageAboutWrongValues();
+        }
+
+        private void DisplayMessageAboutWrongValues()
+        {
+            Console.WriteLine("Wprowadzono nieprawidłowe wartości!");
+            System.Threading.Thread.Sleep(1500);
+        }
+
+        private bool CheckSelectedIndexes()
+        {
+            if (SelectedIndexesInTextVersion.Length != 2)
+                return false;
+
+            else
+                return CheckIfNumbersBetween1And8AreGiven();
+        }
+
+        private bool CheckIfNumbersBetween1And8AreGiven()
+        {
+            if (!int.TryParse(SelectedIndexesInTextVersion[0], out _) || !int.TryParse(SelectedIndexesInTextVersion[1], out _))
+                return false;
+
+            else
+                return int.Parse(SelectedIndexesInTextVersion[0]) >= 1 && int.Parse(SelectedIndexesInTextVersion[0]) <= 8 &&
+                       int.Parse(SelectedIndexesInTextVersion[1]) >= 1 && int.Parse(SelectedIndexesInTextVersion[1]) <= 8;
+        }
+
+        private void PreparingToPlayGame()
+        {
+            SetIndexesOfSelectedField();
+            SetMinesOnBoard();
+
+            SetTopAndBottomOfSquare(AreFieldsToBeUncoveredUpwards: NumberGenerator.Next(0, 2) == 1);
+            SetLeftAndRightOfSquare(AreFieldsToBeUncoveredLeft: NumberGenerator.Next(0, 2) == 1);
+
+            LoadNumberOfMinesIntoDisplayedBoard();
+
+            IsThereFirstRound = false;
+        }
+
+        private void SetIndexesOfSelectedField()
+        {
+            IndexesOfSelectedField = Tuple.Create(int.Parse(SelectedIndexesInTextVersion[0]) - 1,
+                                                  int.Parse(SelectedIndexesInTextVersion[1]) - 1);
+        }
+
+        private void SetMinesOnBoard()
+        {
+            for (int i = 0; i < 10; ++i)
+            {
+                int Vertical = NumberGenerator.Next(0, VerticalDimensionOfBoard);
+                int Horizontal = NumberGenerator.Next(0, HorizontalDimensionOfBoard);
+                var CoordinatePair = Tuple.Create(Vertical, Horizontal);
+
+                if (CanMineBeInThisField(CoordinatePair))
+                {
+                    ActualBoardContent[Vertical, Horizontal] = '*';
+                    CoordinatesOfMinesDrawn.Add(CoordinatePair);
+                }
+
+                else
+                    --i;
+            }
+        }
+
+        private bool CanMineBeInThisField(Tuple<int, int> CoordinatePair)
+        {
+            for (int j = 0; j < CoordinatesOfMinesDrawn.Count; ++j)
+                if (Equals(CoordinatesOfMinesDrawn[j], CoordinatePair) || Equals(CoordinatesOfMinesDrawn[j], IndexesOfSelectedField))
+                    return false;
+
+            return true;
+        }
+
+        private void SetTopAndBottomOfSquare(bool AreFieldsToBeUncoveredUpwards)
+        {
+            if (AreFieldsToBeUncoveredUpwards)
+            {
+                StartSquareOfExposedFields.Top = (IndexesOfSelectedField.Item1 - 2) < 0 ? 0 : (IndexesOfSelectedField.Item1 - 2);
+                StartSquareOfExposedFields.Bottom = IndexesOfSelectedField.Item1;
+            }
+
+            else
+            {
+                StartSquareOfExposedFields.Top = IndexesOfSelectedField.Item1;
+                StartSquareOfExposedFields.Bottom = (IndexesOfSelectedField.Item1 + 2) > VerticalDimensionOfBoard - 1 ?
+                                                     VerticalDimensionOfBoard - 1 : (IndexesOfSelectedField.Item1 + 2);
+            }
+        }
+
+        private void SetLeftAndRightOfSquare(bool AreFieldsToBeUncoveredLeft)
+        {
+            if (AreFieldsToBeUncoveredLeft)
+            {
+                StartSquareOfExposedFields.Left = (IndexesOfSelectedField.Item2 - 2) < 0 ? 0 : (IndexesOfSelectedField.Item2 - 2);
+                StartSquareOfExposedFields.Right = IndexesOfSelectedField.Item2;
+            }
+
+            else
+            {
+                StartSquareOfExposedFields.Left = IndexesOfSelectedField.Item2;
+                StartSquareOfExposedFields.Right = (IndexesOfSelectedField.Item2 + 2) > HorizontalDimensionOfBoard - 1 ?
+                                                    HorizontalDimensionOfBoard - 1 : (IndexesOfSelectedField.Item2 + 2);
+            }
+        }
+
+        private void LoadNumberOfMinesIntoDisplayedBoard()
+        {
+            for (int VerticalIndex = StartSquareOfExposedFields.Top; VerticalIndex <= StartSquareOfExposedFields.Bottom; ++VerticalIndex)
+                for (int HorizontalIndex = StartSquareOfExposedFields.Left; HorizontalIndex <= StartSquareOfExposedFields.Right; ++HorizontalIndex)
+                {
+                    int NumberDisplayedInGivenField = 0;
+                    if (ActualBoardContent[VerticalIndex, HorizontalIndex] != '*')
+                    {
+                        NumberDisplayedInGivenField = CalculateHowManyMinesAreAroundField(VerticalIndex, HorizontalIndex);
+
+                        if (NumberDisplayedInGivenField != 0)
+                            DisplayedBoard[VerticalIndex, HorizontalIndex] = NumberDisplayedInGivenField.ToString()[0];
+
+                        else
+                            DisplayedBoard[VerticalIndex, HorizontalIndex] = 'O';
+                    }
+                }
+        }
+
+        private int CalculateHowManyMinesAreAroundField(int VerticalIndex, int HorizontalIndex)
+        {
+            int NumberDisplayedInGivenField = 0;
+            for (int i = VerticalIndex - 1; i <= VerticalIndex + 1; ++i)
+            {
+                for (int j = HorizontalIndex - 1; j <= HorizontalIndex + 1; ++j)
+                {
+                    if (IsThereFieldWithSuchIndex(i, j) && ActualBoardContent[i, j] == '*')
+                        ++NumberDisplayedInGivenField;
+                }
+            }
+            return NumberDisplayedInGivenField;
+        }
+
+        private bool IsThereFieldWithSuchIndex(int i, int j)
+        {
+            return i >= 0 &&
+                   i < VerticalDimensionOfBoard &&
+                   j >= 0 &&
+                   j < HorizontalDimensionOfBoard;
+        }
+
         private void DisplayFieldIndexQuery()
         {
             Console.ForegroundColor = RightTextColor;
             Console.Write("Wybierz pole (podaj pionowy indeks oraz po spacji poziomy indeks): ");
+        }
+
+        private void PlayingRound()
+        {
+            Console.WriteLine("\n" + "Wybierz opcje: ");
+            Console.WriteLine("1. Odkryj pole");
+            Console.WriteLine("2. Ustaw chorągiewkę");
+            Console.WriteLine("3. Usuń chorągiewkę");
         }
     }
 }
