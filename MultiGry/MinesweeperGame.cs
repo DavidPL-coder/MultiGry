@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MultiGry
 {
@@ -25,6 +22,14 @@ namespace MultiGry
             public int Top;
             public int Right;
             public int Bottom;
+
+            public Rect(int Left, int Top, int Right, int Bottom)
+            {
+                this.Left = Left;
+                this.Top = Top;
+                this.Right = Right;
+                this.Bottom = Bottom;
+            }
         }
         Rect StartSquareOfExposedFields;
 
@@ -39,8 +44,6 @@ namespace MultiGry
 
                 else
                     PlayingRound();
-
-                Console.ReadKey();
             }
 
             var ProgramExecution = new DecisionOnFurtherCourseOfProgram(this);
@@ -85,16 +88,6 @@ namespace MultiGry
             Console.WriteLine("  - - - - - - - -");
             DisplayVerticalBoardLines();
 
-            for (int i = 0; i < 8; i++)
-            {
-                for (int j = 0; j < 8; j++)
-                {
-                    Console.Write(ActualBoardContent[i, j] + " ");
-                }
-
-                Console.WriteLine();
-            }
-
             Console.ForegroundColor = RightTextColor;
         }
 
@@ -131,20 +124,20 @@ namespace MultiGry
 
         private void StartingGame()
         {
-            DisplayFieldIndexQuery();
-            SelectedIndexesInTextVersion = Console.ReadLine().Split();
+            UserInputOfFieldIndexes();            
 
             if (CheckSelectedIndexes())
                 PreparingToPlayGame();
 
             else
-                DisplayMessageAboutWrongValues();
+                DisplayMessage("Wprowadzono nieprawidłowe wartości!");
         }
 
-        private void DisplayMessageAboutWrongValues()
+        private void UserInputOfFieldIndexes()
         {
-            Console.WriteLine("Wprowadzono nieprawidłowe wartości!");
-            System.Threading.Thread.Sleep(1500);
+            Console.ForegroundColor = RightTextColor;
+            Console.Write("Wybierz pole (podaj pionowy indeks oraz po spacji poziomy indeks): ");
+            SelectedIndexesInTextVersion = Console.ReadLine().Split();
         }
 
         private bool CheckSelectedIndexes()
@@ -174,16 +167,14 @@ namespace MultiGry
             SetTopAndBottomOfSquare(AreFieldsToBeUncoveredUpwards: NumberGenerator.Next(0, 2) == 1);
             SetLeftAndRightOfSquare(AreFieldsToBeUncoveredLeft: NumberGenerator.Next(0, 2) == 1);
 
-            LoadNumberOfMinesIntoDisplayedBoard();
+            LoadNumberOfMinesIntoDisplayedBoard(StartSquareOfExposedFields);
 
             IsThereFirstRound = false;
         }
 
-        private void SetIndexesOfSelectedField()
-        {
+        private void SetIndexesOfSelectedField() => 
             IndexesOfSelectedField = Tuple.Create(int.Parse(SelectedIndexesInTextVersion[0]) - 1,
                                                   int.Parse(SelectedIndexesInTextVersion[1]) - 1);
-        }
 
         private void SetMinesOnBoard()
         {
@@ -245,23 +236,29 @@ namespace MultiGry
             }
         }
 
-        private void LoadNumberOfMinesIntoDisplayedBoard()
+        private void LoadNumberOfMinesIntoDisplayedBoard(Rect Square)
         {
-            for (int VerticalIndex = StartSquareOfExposedFields.Top; VerticalIndex <= StartSquareOfExposedFields.Bottom; ++VerticalIndex)
-                for (int HorizontalIndex = StartSquareOfExposedFields.Left; HorizontalIndex <= StartSquareOfExposedFields.Right; ++HorizontalIndex)
+            for (int i = Square.Top; i <= Square.Bottom; ++i)
+            {
+                for (int j = Square.Left; j <= Square.Right; ++j)
                 {
-                    int NumberDisplayedInGivenField = 0;
-                    if (ActualBoardContent[VerticalIndex, HorizontalIndex] != '*')
-                    {
-                        NumberDisplayedInGivenField = CalculateHowManyMinesAreAroundField(VerticalIndex, HorizontalIndex);
-
-                        if (NumberDisplayedInGivenField != 0)
-                            DisplayedBoard[VerticalIndex, HorizontalIndex] = NumberDisplayedInGivenField.ToString()[0];
-
-                        else
-                            DisplayedBoard[VerticalIndex, HorizontalIndex] = 'O';
-                    }
+                    if (ActualBoardContent[i, j] != '*')
+                        DisplayNumberOfMinesInField(i, j);
                 }
+            }
+        }
+
+        private int DisplayNumberOfMinesInField(int VerticalIndex, int HorizontalIndex)
+        {
+            int NumberDisplayedInGivenField = CalculateHowManyMinesAreAroundField(VerticalIndex, HorizontalIndex);
+
+            if (NumberDisplayedInGivenField != 0)
+                DisplayedBoard[VerticalIndex, HorizontalIndex] = NumberDisplayedInGivenField.ToString()[0];
+
+            else
+                DisplayedBoard[VerticalIndex, HorizontalIndex] = 'O';
+
+            return NumberDisplayedInGivenField;
         }
 
         private int CalculateHowManyMinesAreAroundField(int VerticalIndex, int HorizontalIndex)
@@ -278,26 +275,68 @@ namespace MultiGry
             return NumberDisplayedInGivenField;
         }
 
-        private bool IsThereFieldWithSuchIndex(int i, int j)
-        {
-            return i >= 0 &&
-                   i < VerticalDimensionOfBoard &&
-                   j >= 0 &&
-                   j < HorizontalDimensionOfBoard;
-        }
+        private bool IsThereFieldWithSuchIndex(int i, int j) => 
+            i >= 0 &&
+            i < VerticalDimensionOfBoard &&
+            j >= 0 &&
+            j < HorizontalDimensionOfBoard;
 
-        private void DisplayFieldIndexQuery()
+        private void DisplayMessage(string Message)
         {
-            Console.ForegroundColor = RightTextColor;
-            Console.Write("Wybierz pole (podaj pionowy indeks oraz po spacji poziomy indeks): ");
+            Console.WriteLine(Message);
+            System.Threading.Thread.Sleep(1500);
         }
 
         private void PlayingRound()
+        {
+            DisplayOptionsToSelectFrom();
+            var KeySelectedByUser = Console.ReadKey(true).Key;
+
+            if (KeySelectedByUser >= ConsoleKey.D1 && KeySelectedByUser <= ConsoleKey.D3)                
+                PerformOperationsForSelectedOption(KeySelectedByUser);
+
+            else
+                DisplayMessage("Można wybrać tylko opcje z numerami 1-3!");     
+        }
+
+        private void PerformOperationsForSelectedOption(ConsoleKey KeySelectedByUser)
+        {
+            UserInputOfFieldIndexes();
+            if (CheckSelectedIndexes())
+            {
+                switch (KeySelectedByUser)
+                {
+                    case ConsoleKey.D1: PlayerRevealsField(); break;
+                }
+            }
+
+            else
+                DisplayMessage("Wprowadzono nieprawidłowe wartości!");   
+        }
+
+        private void DisplayOptionsToSelectFrom()
         {
             Console.WriteLine("\n" + "Wybierz opcje: ");
             Console.WriteLine("1. Odkryj pole");
             Console.WriteLine("2. Ustaw chorągiewkę");
             Console.WriteLine("3. Usuń chorągiewkę");
+        }
+
+        private void PlayerRevealsField()
+        {
+            SetIndexesOfSelectedField();
+            var VerticalIndex = IndexesOfSelectedField.Item1;
+            var HorizontalIndex = IndexesOfSelectedField.Item2;
+
+            if (ActualBoardContent[VerticalIndex, HorizontalIndex] != '*')
+            {
+                if (DisplayNumberOfMinesInField(VerticalIndex, HorizontalIndex) == 0)
+                    LoadNumberOfMinesIntoDisplayedBoard(new Rect(HorizontalIndex - 1, 
+                                                                 VerticalIndex - 1, 
+                                                                 HorizontalIndex + 1, 
+                                                                 VerticalIndex + 1));
+            }
+                
         }
     }
 }
