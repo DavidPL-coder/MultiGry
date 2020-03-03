@@ -1,62 +1,61 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace MultiGry
 {
     class MinesweeperGame : IMenuOption
     {
         public string NameOption => "Saper";
+        private bool IsThereFirstRound;
         private char[,] DisplayedBoard;
         private char[,] ActualBoardContent;
         private const int VerticalDimensionOfBoard = 8;
         private const int HorizontalDimensionOfBoard = 8;
-        private ConsoleColor RightTextColor;
-        private bool IsThereFirstRound;
         private List<Tuple<int, int>> CoordinatesOfMinesDrawn;
         private Random NumberGenerator;
-        private Tuple<int, int> IndexesOfSelectedField;
+        enum GameStatus { DuringGame, PlayerLost, PlayerWin, Break }
+        GameStatus StatusOfGame;
+        Stopwatch GameTime;
         private string[] SelectedIndexesInTextVersion;
+        private Tuple<int, int> IndexesOfField;  
         struct Rect
         {
-            public int Left;
-            public int Top;
-            public int Right;
-            public int Bottom;
-
-            public Rect(int Left, int Top, int Right, int Bottom)
-            {
-                this.Left = Left;
-                this.Top = Top;
-                this.Right = Right;
-                this.Bottom = Bottom;
-            }
+            public int Left, Top, Right, Bottom;
         }
-        Rect StartSquareOfExposedFields;
-
+        Rect SquareOfExposedFields;
+        
         public OptionsCategory OptionExecuting()
         {
-            SetDefaults();
-            while (IsGameStillGoingOn())
-            {
-                DisplayBoard();
-                if (IsThereFirstRound)
-                    StartingGame();
-
-                else
-                    PlayingRound();
-            }
+            ExecutingNewGame();
 
             var ProgramExecution = new DecisionOnFurtherCourseOfProgram(this);
             return ProgramExecution.UserDecidesWhatToDoNext();
         }
 
+
+        private void ExecutingNewGame()
+        {
+            SetDefaults();
+            GameTime.Start();
+            PlayingGame();
+
+            DisplayBoard();
+            GameTime.Stop();
+            DisplayGameResult();
+
+            if (StatusOfGame != GameStatus.Break)
+                Console.ReadKey();
+        }
+
         private void SetDefaults()
         {
-            RightTextColor = Console.ForegroundColor;
             IsThereFirstRound = true;
             SetBoard();
             CoordinatesOfMinesDrawn = new List<Tuple<int, int>>();
             NumberGenerator = new Random();
+            StatusOfGame = GameStatus.DuringGame;
+            GameTime = new Stopwatch();
         }
 
         private void SetBoard()
@@ -74,21 +73,25 @@ namespace MultiGry
             }
         }
 
-        private bool IsGameStillGoingOn()
+        private void PlayingGame()
         {
-            return true;
+            while (StatusOfGame == GameStatus.DuringGame)
+            {
+                DisplayBoard();
+                if (IsThereFirstRound)
+                    StartingGame();
+
+                else
+                    PlayingRound();
+            }
         }
 
         private void DisplayBoard()
-        {
-            Console.ForegroundColor = ConsoleColor.White;
-
+        {          
             Console.Clear();
             Console.WriteLine("  1 2 3 4 5 6 7 8");
             Console.WriteLine("  - - - - - - - -");
             DisplayVerticalBoardLines();
-
-            Console.ForegroundColor = RightTextColor;
         }
 
         private void DisplayVerticalBoardLines()
@@ -110,10 +113,12 @@ namespace MultiGry
         {
             switch (DisplayedBoard[i, j])
             {
+                case '*': Console.ForegroundColor = ConsoleColor.DarkRed; break;
+                case 'C': Console.ForegroundColor = ConsoleColor.Yellow; break;
                 case '1': Console.ForegroundColor = ConsoleColor.Blue; break;
                 case '2': Console.ForegroundColor = ConsoleColor.Green; break;
                 case '3': Console.ForegroundColor = ConsoleColor.Red; break;
-                case '4': Console.ForegroundColor = ConsoleColor.DarkBlue; break;
+                case '4': Console.ForegroundColor = ConsoleColor.DarkCyan; break;
                 case '5':
                 case '6':
                 case '7':
@@ -124,8 +129,7 @@ namespace MultiGry
 
         private void StartingGame()
         {
-            UserInputOfFieldIndexes();            
-
+            UserInputOfFieldIndexes();
             if (CheckSelectedIndexes())
                 PreparingToPlayGame();
 
@@ -135,7 +139,6 @@ namespace MultiGry
 
         private void UserInputOfFieldIndexes()
         {
-            Console.ForegroundColor = RightTextColor;
             Console.Write("Wybierz pole (podaj pionowy indeks oraz po spacji poziomy indeks): ");
             SelectedIndexesInTextVersion = Console.ReadLine().Split();
         }
@@ -161,20 +164,19 @@ namespace MultiGry
 
         private void PreparingToPlayGame()
         {
-            SetIndexesOfSelectedField();
+            SetIndexesOfField();
             SetMinesOnBoard();
 
-            SetTopAndBottomOfSquare(AreFieldsToBeUncoveredUpwards: NumberGenerator.Next(0, 2) == 1);
-            SetLeftAndRightOfSquare(AreFieldsToBeUncoveredLeft: NumberGenerator.Next(0, 2) == 1);
+            SetTopAndBottomOfSquare();
+            SetLeftAndRightOfSquare();
 
-            LoadNumberOfMinesIntoDisplayedBoard(StartSquareOfExposedFields);
-
+            LoadNumberOfMinesIntoDisplayedBoard();
             IsThereFirstRound = false;
         }
 
-        private void SetIndexesOfSelectedField() => 
-            IndexesOfSelectedField = Tuple.Create(int.Parse(SelectedIndexesInTextVersion[0]) - 1,
-                                                  int.Parse(SelectedIndexesInTextVersion[1]) - 1);
+        private void SetIndexesOfField() =>
+            IndexesOfField = Tuple.Create(int.Parse(SelectedIndexesInTextVersion[0]) - 1,
+                                          int.Parse(SelectedIndexesInTextVersion[1]) - 1);
 
         private void SetMinesOnBoard()
         {
@@ -198,55 +200,62 @@ namespace MultiGry
         private bool CanMineBeInThisField(Tuple<int, int> CoordinatePair)
         {
             for (int j = 0; j < CoordinatesOfMinesDrawn.Count; ++j)
-                if (Equals(CoordinatesOfMinesDrawn[j], CoordinatePair) || Equals(CoordinatesOfMinesDrawn[j], IndexesOfSelectedField))
+                if (Equals(CoordinatesOfMinesDrawn[j], CoordinatePair) ||
+                    Equals(CoordinatesOfMinesDrawn[j], IndexesOfField))
                     return false;
 
             return true;
         }
 
-        private void SetTopAndBottomOfSquare(bool AreFieldsToBeUncoveredUpwards)
+        private void SetTopAndBottomOfSquare()
         {
+            bool AreFieldsToBeUncoveredUpwards = NumberGenerator.Next(0, 2) == 1;
             if (AreFieldsToBeUncoveredUpwards)
             {
-                StartSquareOfExposedFields.Top = (IndexesOfSelectedField.Item1 - 2) < 0 ? 0 : (IndexesOfSelectedField.Item1 - 2);
-                StartSquareOfExposedFields.Bottom = IndexesOfSelectedField.Item1;
+                SquareOfExposedFields.Top = IndexesOfField.Item1 - 2;
+                SquareOfExposedFields.Bottom = IndexesOfField.Item1;
             }
 
             else
             {
-                StartSquareOfExposedFields.Top = IndexesOfSelectedField.Item1;
-                StartSquareOfExposedFields.Bottom = (IndexesOfSelectedField.Item1 + 2) > VerticalDimensionOfBoard - 1 ?
-                                                     VerticalDimensionOfBoard - 1 : (IndexesOfSelectedField.Item1 + 2);
+                SquareOfExposedFields.Top = IndexesOfField.Item1;
+                SquareOfExposedFields.Bottom = IndexesOfField.Item1 + 2;
             }
         }
 
-        private void SetLeftAndRightOfSquare(bool AreFieldsToBeUncoveredLeft)
+        private void SetLeftAndRightOfSquare()
         {
+            bool AreFieldsToBeUncoveredLeft = NumberGenerator.Next(0, 2) == 1;
             if (AreFieldsToBeUncoveredLeft)
             {
-                StartSquareOfExposedFields.Left = (IndexesOfSelectedField.Item2 - 2) < 0 ? 0 : (IndexesOfSelectedField.Item2 - 2);
-                StartSquareOfExposedFields.Right = IndexesOfSelectedField.Item2;
+                SquareOfExposedFields.Left = IndexesOfField.Item2 - 2;
+                SquareOfExposedFields.Right = IndexesOfField.Item2;
             }
 
             else
             {
-                StartSquareOfExposedFields.Left = IndexesOfSelectedField.Item2;
-                StartSquareOfExposedFields.Right = (IndexesOfSelectedField.Item2 + 2) > HorizontalDimensionOfBoard - 1 ?
-                                                    HorizontalDimensionOfBoard - 1 : (IndexesOfSelectedField.Item2 + 2);
+                SquareOfExposedFields.Left = IndexesOfField.Item2;
+                SquareOfExposedFields.Right = IndexesOfField.Item2 + 2;
             }
         }
 
-        private void LoadNumberOfMinesIntoDisplayedBoard(Rect Square)
+        private void LoadNumberOfMinesIntoDisplayedBoard()
         {
-            for (int i = Square.Top; i <= Square.Bottom; ++i)
+            for (int i = SquareOfExposedFields.Top; i <= SquareOfExposedFields.Bottom; ++i)
             {
-                for (int j = Square.Left; j <= Square.Right; ++j)
+                for (int j = SquareOfExposedFields.Left; j <= SquareOfExposedFields.Right; ++j)
                 {
-                    if (ActualBoardContent[i, j] != '*')
+                    if (IsThereFieldWithSuchIndex(i, j) && ActualBoardContent[i, j] != '*')
                         DisplayNumberOfMinesInField(i, j);
                 }
             }
         }
+
+        private bool IsThereFieldWithSuchIndex(int i, int j) =>
+            i >= 0 &&
+            i < VerticalDimensionOfBoard &&
+            j >= 0 &&
+            j < HorizontalDimensionOfBoard;
 
         private int DisplayNumberOfMinesInField(int VerticalIndex, int HorizontalIndex)
         {
@@ -275,12 +284,6 @@ namespace MultiGry
             return NumberDisplayedInGivenField;
         }
 
-        private bool IsThereFieldWithSuchIndex(int i, int j) => 
-            i >= 0 &&
-            i < VerticalDimensionOfBoard &&
-            j >= 0 &&
-            j < HorizontalDimensionOfBoard;
-
         private void DisplayMessage(string Message)
         {
             Console.WriteLine(Message);
@@ -295,8 +298,24 @@ namespace MultiGry
             if (KeySelectedByUser >= ConsoleKey.D1 && KeySelectedByUser <= ConsoleKey.D3)                
                 PerformOperationsForSelectedOption(KeySelectedByUser);
 
+            else if (KeySelectedByUser == ConsoleKey.D4)
+                TryingToStopGame();
+
+            else if (KeySelectedByUser == ConsoleKey.D5)
+                DisplayMessage("Czas: " + GetGameTimeInTextVersion());
+
             else
-                DisplayMessage("Można wybrać tylko opcje z numerami 1-3!");     
+                DisplayMessage("Można wybrać tylko opcje z numerami 1-5!");
+        }
+
+        private void DisplayOptionsToSelectFrom()
+        {
+            Console.WriteLine("\n" + "Wybierz opcje: ");
+            Console.WriteLine("1. Odsłoń pole");
+            Console.WriteLine("2. Ustaw chorągiewkę");
+            Console.WriteLine("3. Usuń chorągiewkę");
+            Console.WriteLine("4. Zakończ rozgrywkę");
+            Console.WriteLine("5. Pokaż upłynięty czas");
         }
 
         private void PerformOperationsForSelectedOption(ConsoleKey KeySelectedByUser)
@@ -304,9 +323,12 @@ namespace MultiGry
             UserInputOfFieldIndexes();
             if (CheckSelectedIndexes())
             {
+                SetIndexesOfField();
                 switch (KeySelectedByUser)
                 {
                     case ConsoleKey.D1: PlayerRevealsField(); break;
+                    case ConsoleKey.D2: PlayerSetsFlagOnField(); break;
+                    case ConsoleKey.D3: PlayerRemovesFlagOnField(); break;
                 }
             }
 
@@ -314,29 +336,99 @@ namespace MultiGry
                 DisplayMessage("Wprowadzono nieprawidłowe wartości!");   
         }
 
-        private void DisplayOptionsToSelectFrom()
-        {
-            Console.WriteLine("\n" + "Wybierz opcje: ");
-            Console.WriteLine("1. Odkryj pole");
-            Console.WriteLine("2. Ustaw chorągiewkę");
-            Console.WriteLine("3. Usuń chorągiewkę");
-        }
-
         private void PlayerRevealsField()
         {
-            SetIndexesOfSelectedField();
-            var VerticalIndex = IndexesOfSelectedField.Item1;
-            var HorizontalIndex = IndexesOfSelectedField.Item2;
-
-            if (ActualBoardContent[VerticalIndex, HorizontalIndex] != '*')
+            if (IsntSelectedFieldMined())
             {
-                if (DisplayNumberOfMinesInField(VerticalIndex, HorizontalIndex) == 0)
-                    LoadNumberOfMinesIntoDisplayedBoard(new Rect(HorizontalIndex - 1, 
-                                                                 VerticalIndex - 1, 
-                                                                 HorizontalIndex + 1, 
-                                                                 VerticalIndex + 1));
+                UnveilingFieldOrSeveralFields();
+                StatusOfGame = DidPlayerRevealAllEmptyFields() ? GameStatus.PlayerWin : GameStatus.DuringGame;
             }
-                
+
+            else
+            {
+                UnveilingAllMines();
+                StatusOfGame = GameStatus.PlayerLost;
+            }
         }
+
+        private bool IsntSelectedFieldMined() =>
+            ActualBoardContent[IndexesOfField.Item1, IndexesOfField.Item2] != '*';
+
+        private void UnveilingFieldOrSeveralFields()
+        {
+            if (DisplayNumberOfMinesInField(IndexesOfField.Item1, IndexesOfField.Item2) == 0)
+            {
+                SquareOfExposedFields.Left = IndexesOfField.Item2 - 1;
+                SquareOfExposedFields.Top = IndexesOfField.Item1 - 1;
+                SquareOfExposedFields.Right = IndexesOfField.Item2 + 1;
+                SquareOfExposedFields.Bottom = IndexesOfField.Item1 + 1;
+                LoadNumberOfMinesIntoDisplayedBoard();
+            }
+        }
+
+        private bool DidPlayerRevealAllEmptyFields()
+        {
+            for (int i = 0; i < VerticalDimensionOfBoard; ++i)
+                for (int j = 0; j < HorizontalDimensionOfBoard; ++j)
+                    if (ActualBoardContent[i, j] == 'O' && DisplayedBoard[i, j] == '■')
+                        return false;
+
+            return true;
+        }
+
+        private void UnveilingAllMines()
+        {
+            for (int i = 0; i < VerticalDimensionOfBoard; ++i)
+                for (int j = 0; j < HorizontalDimensionOfBoard; ++j)
+                    if (ActualBoardContent[i, j] == '*')
+                        DisplayedBoard[i, j] = '*';
+        }       
+
+        private void PlayerSetsFlagOnField()
+        {
+            if (DisplayedBoard[IndexesOfField.Item1, IndexesOfField.Item2] == '■')
+                DisplayedBoard[IndexesOfField.Item1, IndexesOfField.Item2] = 'C';                
+
+            else
+                DisplayMessage("Tutaj nie można wstawić flagi!");
+        }
+
+        private void PlayerRemovesFlagOnField()
+        {
+            if (DisplayedBoard[IndexesOfField.Item1, IndexesOfField.Item2] == 'C')
+                DisplayedBoard[IndexesOfField.Item1, IndexesOfField.Item2] = '■';
+
+            else
+                DisplayMessage("Na tym polu nie ma flagi!");
+        }
+
+        private void TryingToStopGame()
+        {
+            Console.WriteLine("Czy napewno chcesz zakończyć rozgrywkę?");
+            Console.WriteLine("(naciśnij enter aby potwierdzić, bądź inny klawisz aby anulować)");
+
+            if (Console.ReadKey(true).Key == ConsoleKey.Enter)
+                StatusOfGame = GameStatus.Break;
+        }
+
+        private string GetGameTimeInTextVersion()
+        {
+            if (GameTime.ElapsedMilliseconds < 60000)
+                return (GameTime.ElapsedMilliseconds / 1000).ToString() + " s";
+
+            else
+                return (GameTime.ElapsedMilliseconds / 60000).ToString() + " m " + (GameTime.ElapsedMilliseconds % 60000 / 1000).ToString() + " s";
+        }
+
+        private void DisplayGameResult()
+        {
+            if (StatusOfGame == GameStatus.PlayerWin)
+                Console.WriteLine("Brawo! Wygrałeś!");
+
+            if (StatusOfGame == GameStatus.PlayerLost)
+                Console.WriteLine("Niestety! Nie udało ci się!");
+
+            Console.WriteLine("Twój czas: " + GetGameTimeInTextVersion());
+        }   
     }
 }

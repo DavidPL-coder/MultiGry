@@ -19,7 +19,6 @@ namespace MultiGry
             options.Add(new HangmanGame());
             options.Add(new TicTacToeGame());
             options.Add(new FilesEncryptionOption());
-            options.Add(new ChangeTextColorOption());
             options.Add(new MinesweeperGame());
             options.Add(new ExitOption());
 
@@ -28,6 +27,7 @@ namespace MultiGry
 
         static void Main(string[] args)
         {
+            Console.ForegroundColor = ConsoleColor.White;
             MainMenu Menu = new MainMenu(GetListOfMenuOption());
             Menu.ExecutingMainMenuOperation();
         }
