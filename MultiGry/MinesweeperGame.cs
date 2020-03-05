@@ -14,16 +14,16 @@ namespace MultiGry
         private const int HorizontalDimensionOfBoard = 8;
         private List<Tuple<int, int>> CoordinatesOfMinesDrawn;
         private Random NumberGenerator;
-        enum GameStatus { DuringGame, PlayerLost, PlayerWin, Break }
-        GameStatus StatusOfGame;
-        Stopwatch GameTime;
-        private string[] SelectedIndexesInTextVersion;
+        private enum GameStatus { DuringGame, PlayerLost, PlayerWin, Break }
+        private GameStatus StatusOfGame;
+        private Stopwatch GameTime;
+        private string SelectedIndexesInTextVersion;
         private Tuple<int, int> IndexesOfField;  
-        struct Rect
+        private struct Rect
         {
             public int Left, Top, Right, Bottom;
         }
-        Rect SquareOfExposedFields;
+        private Rect SquareOfExposedFields;
         
         public OptionsCategory OptionExecuting()
         {
@@ -140,27 +140,25 @@ namespace MultiGry
         private void UserInputOfFieldIndexes()
         {
             Console.Write("Wybierz pole (podaj pionowy indeks oraz po spacji poziomy indeks): ");
-            SelectedIndexesInTextVersion = Console.ReadLine().Split();
+            SelectedIndexesInTextVersion = Console.ReadLine();
         }
 
         private bool CheckSelectedIndexes()
         {
-            if (SelectedIndexesInTextVersion.Length != 2)
-                return false;
+            int IndexCounter = 0;
+            foreach (var item in SelectedIndexesInTextVersion)
+            {
+                if (CheckIfValueIsNumberBetween1And8(item))
+                    ++IndexCounter;
 
-            else
-                return CheckIfNumbersBetween1And8AreGiven();
+                else if (item != ' ' && item != '\t')
+                    return false;
+            }
+            return IndexCounter == 2;
         }
 
-        private bool CheckIfNumbersBetween1And8AreGiven()
-        {
-            if (!int.TryParse(SelectedIndexesInTextVersion[0], out _) || !int.TryParse(SelectedIndexesInTextVersion[1], out _))
-                return false;
-
-            else
-                return int.Parse(SelectedIndexesInTextVersion[0]) >= 1 && int.Parse(SelectedIndexesInTextVersion[0]) <= 8 &&
-                       int.Parse(SelectedIndexesInTextVersion[1]) >= 1 && int.Parse(SelectedIndexesInTextVersion[1]) <= 8;
-        }
+        private bool CheckIfValueIsNumberBetween1And8(char Value) => 
+            (Value - '0') >= 1 && (Value - '0') <= 8;
 
         private void PreparingToPlayGame()
         {
@@ -174,9 +172,21 @@ namespace MultiGry
             IsThereFirstRound = false;
         }
 
-        private void SetIndexesOfField() =>
-            IndexesOfField = Tuple.Create(int.Parse(SelectedIndexesInTextVersion[0]) - 1,
-                                          int.Parse(SelectedIndexesInTextVersion[1]) - 1);
+        private void SetIndexesOfField()
+        {
+            int VerticalIndex = -1, HorizontalIndex = -1;
+            foreach (char item in SelectedIndexesInTextVersion)
+                if (CheckIfValueIsNumberBetween1And8(item))
+                {
+                    if (VerticalIndex == -1)
+                        VerticalIndex = item - '1'; // we convert "item" to int and then subtract one later we assign it to "FirstIndex"
+
+                    else
+                        HorizontalIndex = item - '1';
+                }
+
+            IndexesOfField = Tuple.Create(VerticalIndex, HorizontalIndex);
+        }
 
         private void SetMinesOnBoard()
         {
@@ -338,7 +348,10 @@ namespace MultiGry
 
         private void PlayerRevealsField()
         {
-            if (IsntSelectedFieldMined())
+            if (DidUserSelectFlaggedField())
+                DisplayMessage("Na tym pole jest chorągiewka, więc nie można odsłonić pola!");
+
+            else if (IsntSelectedFieldMined())
             {
                 UnveilingFieldOrSeveralFields();
                 StatusOfGame = DidPlayerRevealAllEmptyFields() ? GameStatus.PlayerWin : GameStatus.DuringGame;
@@ -350,6 +363,9 @@ namespace MultiGry
                 StatusOfGame = GameStatus.PlayerLost;
             }
         }
+
+        private bool DidUserSelectFlaggedField() =>
+            DisplayedBoard[IndexesOfField.Item1, IndexesOfField.Item2] == 'C';
 
         private bool IsntSelectedFieldMined() =>
             ActualBoardContent[IndexesOfField.Item1, IndexesOfField.Item2] != '*';
