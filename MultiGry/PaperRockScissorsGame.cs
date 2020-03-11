@@ -69,19 +69,16 @@ namespace MultiGry
                 Console.Clear();
                 DisplayingHandShapeSelection();
                 DownloadingSelectingOption();
-                if (!CheckSelectedRightOption())
-                {
-                    DisplayMessageAboutWrongSelection();
-                    continue;
-                }         
 
-                // we display options again to hide the key selected by the user:
-                Console.Clear();
-                DisplayingHandShapeSelection();   
-                
-                ComputerSelectionDraw();
-                CheckWhoWin();
-                System.Threading.Thread.Sleep(1500);
+                if (!CheckSelectedRightOption())
+                    DisplayMessageAboutWrongSelection();   
+
+                else
+                {
+                    ComputerSelectionDraw();
+                    CheckWhoWin();
+                    System.Threading.Thread.Sleep(1500);
+                }            
             }
         }
 
@@ -94,14 +91,14 @@ namespace MultiGry
         }
 
         private void DownloadingSelectingOption() =>
-            OptionChosenByUser = (HandShapes)(Console.ReadKey().Key - ConsoleKey.D0);
+            OptionChosenByUser = (HandShapes)(Console.ReadKey(true).Key - ConsoleKey.D0);
 
         private bool CheckSelectedRightOption() => 
             (int)OptionChosenByUser >= 1 && (int)OptionChosenByUser <= 3;
 
         private void DisplayMessageAboutWrongSelection()
         {
-            Console.WriteLine("\n" + "Niewłaściwa opcja! Możesz wybrać tylko Papier(1), Kamień(2), Nożyce(3).");
+            Console.WriteLine("Niewłaściwa opcja! Możesz wybrać tylko Papier(1), Kamień(2), Nożyce(3).");
             --CurrentRound;                          // they reduce "CurrentRound" we prevent us from going to the next round and this means that the user can repeat his choice.
             System.Threading.Thread.Sleep(2000);
         }

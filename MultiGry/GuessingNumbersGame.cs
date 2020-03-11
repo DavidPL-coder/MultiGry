@@ -19,7 +19,7 @@ namespace MultiGry
             NumberDraw();
             UserAttemptsToGuessNumber();   
             ResultDisplay();
-            Console.ReadKey();     
+            Console.ReadKey();
 
             var ProgramExecution = new DecisionOnFurtherCourseOfProgram(this);
             return ProgramExecution.UserDecidesWhatToDoNext();
@@ -55,7 +55,7 @@ namespace MultiGry
                 TryGetProposalFromUser();
             }
             catch (FormatException)
-            {
+            {                
                 Console.WriteLine("Nieprawidłowa wartość!" + "\n");
             }
             catch (OverflowException)
