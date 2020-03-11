@@ -68,7 +68,7 @@ namespace MultiGry
 
         private void FileCreation()
         {
-            UserProvidesPathToFile(MessageToUser: "Podaj nazwę pliku (plik będzie utworzony w lokalizacji programu, można też użyć ścieżki względnej): ");
+            UserProvidesPathToFile(MessageToUser: "Podaj nazwę pliku (plik będzie w lokalizacji programu, można też użyć ścieżki względnej): ");
 
             if (!File.Exists(FilePath))
                 using (File.CreateText(FilePath))

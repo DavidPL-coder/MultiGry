@@ -8,7 +8,7 @@ namespace MultiGry
 {
     class TicTacToeGame : IMenuOption
     {
-        public string NameOption => "Kółko i krzyżyk";
+        public string NameOption => "Kółko i krzyżyk dla dwóch osób";
         private int TurnNumber;
         private enum PlayerType { Nobody, Circle, Sharp }
         private PlayerType PlayerTurn;
@@ -69,12 +69,32 @@ namespace MultiGry
         private void DisplayBoard()
         {
             Console.WriteLine("+---+---+---+");
-            Console.WriteLine("| {0} | {1} | {2} |", Board[0], Board[1], Board[2]);
+            DisplayBoardFieldsInThisRange(0, 2);
+            //Console.WriteLine("| {0} | {1} | {2} |", Board[0], Board[1], Board[2]);
             Console.WriteLine("+---+---+---+");
-            Console.WriteLine("| {0} | {1} | {2} |", Board[3], Board[4], Board[5]);
+            DisplayBoardFieldsInThisRange(3, 5);
+            //Console.WriteLine("| {0} | {1} | {2} |", Board[3], Board[4], Board[5]);
             Console.WriteLine("+---+---+---+");
-            Console.WriteLine("| {0} | {1} | {2} |", Board[6], Board[7], Board[8]);
+            DisplayBoardFieldsInThisRange(6, 8);
+            //Console.WriteLine("| {0} | {1} | {2} |", Board[6], Board[7], Board[8]);
             Console.WriteLine("+---+---+---+");
+        }
+
+        private void DisplayBoardFieldsInThisRange(int Begin, int End)
+        {
+            for (int i = Begin; i <= End; ++i)
+            {
+                Console.Write("| ");
+                if (Board[i] == 'x')
+                    Console.ForegroundColor = ConsoleColor.Blue;
+
+                if (Board[i] == 'o')
+                    Console.ForegroundColor = ConsoleColor.Green;
+
+                Console.Write(Board[i] + " ");
+                Console.ForegroundColor = ConsoleColor.White;
+            }
+            Console.WriteLine("|");
         }
 
         private void PlayerIsSelectingField()
@@ -179,7 +199,7 @@ namespace MultiGry
             if (Winner == PlayerType.Circle)
                 Console.WriteLine("Wygrało kółko!");
 
-            if (Winner == PlayerType.Sharp)
+            else if (Winner == PlayerType.Sharp)
                 Console.WriteLine("Wygrał krzyżyk!");
 
             else

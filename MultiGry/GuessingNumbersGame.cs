@@ -43,6 +43,7 @@ namespace MultiGry
             {
                 Console.Write("(Próba " + UserAttempt + ") Podaj liczbę: ");
                 GetProposalFromUser();
+                Console.Clear();
             }
             while (UsersProposal != NumberToGuess);
         }
@@ -75,6 +76,7 @@ namespace MultiGry
                 string FailedGuessMessage = UsersProposal > NumberToGuess ? "Za dużo!" : "Za mało!";
                 Console.WriteLine(FailedGuessMessage + "\n");
                 ++UserAttempt;
+                System.Threading.Thread.Sleep(1500);
             }
         }
 
