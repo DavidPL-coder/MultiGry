@@ -10,18 +10,20 @@ namespace MultiGry
     {
         public string NameOption => "Wisielec";
         private string[] HangmanDrawing;
-        private string[] AllWords;
+        //private string[] AllWords;
         private int NumberOfUserErrors;
         private string RandomWord;
         private string GuessedLetters;
         private char PlayerLetter;
         private List<char> User_SelectedLetters;
+        private Random GeneratorNumber;
+        private string PlayersWord;
 
         public HangmanGame()
         {
             SetHangmanGrawing();
-            SetAllWords();
             User_SelectedLetters = new List<char>();
+            GeneratorNumber = new Random();    
         }
 
         private void SetHangmanGrawing()
@@ -46,54 +48,12 @@ namespace MultiGry
             };
         }
 
-        private void SetAllWords()
-        {
-            AllWords = new string[]
-            {
-                "telefon",
-                "komputer",
-                "rewolwer",
-                "autostrada",
-                "huragan",
-                "kompresja",
-                "kasztan",
-                "helikopter",
-                "kamper",
-                "butelka",
-                "kaskader",
-                "laptop",
-                "komputer",
-                "myszka",
-                "telefon",
-                "pilot",
-                "koniunkcja",
-                "operator",
-                "stolik",
-                "pastuch",
-                "owca",
-                "paluszki",
-                "krakersy",
-                "serwis",
-                "mieszkanie",
-                "balon",
-                "obiad",
-                "karygodny",
-                "krokodyl",
-                "autostrada",
-                "policja",
-                "konfident",
-                "bachor",
-                "kataklizm",
-                "wariatka",
-                "kontakt"
-            };
-        }
-
 
         public OptionsCategory OptionExecuting()
         {
             SetDefaults();
             DisplayGuessedLetters();
+            DisplayOptionsThatPlayerCanSelect();
 
             PlayingGames();
 
@@ -115,10 +75,14 @@ namespace MultiGry
 
         private void DrawWordToDuess()
         {
-            var Random = new Random();
-            int RandomNumberWord = Random.Next(0, AllWords.Length);
-            RandomWord = AllWords[RandomNumberWord];
+            string[] Words = GetWordsFromResourceFile();
+            int RandomNumberWord = GeneratorNumber.Next(0, Words.Length);
+            RandomWord = Words[RandomNumberWord];
         }
+
+        private string[] GetWordsFromResourceFile() => 
+            Properties.Resources.HangmanGameWords.Split(new string[] { "\r\n", " " }, 
+                                                        StringSplitOptions.RemoveEmptyEntries);
 
         // if the letter is not guessed, underscore is inserted
         private void SetDefaultValueForGuessedLetters()
@@ -142,12 +106,62 @@ namespace MultiGry
         {
             while (!IsGameOver())
             {
-                UserGuessingLetter();
+                UserSelectsOptions();
+
                 DisplayGuessedLetters();
                 DisplayLettersSelectedByUser();
-                Console.WriteLine();
+                DisplayOptionsThatPlayerCanSelect();
                 DisplayHangmanItems();
             }
+        }
+
+        private void UserSelectsOptions()
+        {
+            switch (Console.ReadKey(true).Key)
+            {
+                case ConsoleKey.D1:
+                    UserGuessingLetter();
+                    break;
+
+                case ConsoleKey.D2:
+                    UserGuessingWord();
+                    break;
+
+                default:
+                    ErrorMessage("Można tylko wybrać opcje 1 lub 2!");
+                    break;
+            }
+        }
+
+        private void UserGuessingWord()
+        {
+            Console.Clear();
+            DisplayGuessedLetters();
+            DisplayLettersSelectedByUser();
+            DisplayHangmanItems();            
+
+            Console.WriteLine("\n" + "Podaj słowo: ");
+            PlayersWord = Console.ReadLine();
+
+            for (int i = 0; i < PlayersWord.Length; ++i)
+                if (PlayersWord[i] == ' ' || PlayersWord[i] == '\t')
+                    PlayersWord = PlayersWord.Remove(i--, 1);
+
+            if (PlayersWord == RandomWord)
+                GuessedLetters = PlayersWord;   // this will cause the IsGameOver function to return true and this will cause the player to be declared victorious
+
+            else
+            {
+                ErrorMessage("Złe słowo!");
+                ++NumberOfUserErrors;
+            }
+        }
+
+        private void DisplayOptionsThatPlayerCanSelect()
+        {
+            Console.WriteLine("\n\n" + "Wybierz opcję: ");
+            Console.WriteLine("1. Podanie litery");
+            Console.WriteLine("2. Odgadnięcie hasła");
         }
 
         private bool IsGameOver()
@@ -161,6 +175,10 @@ namespace MultiGry
 
         private void UserGuessingLetter()
         {
+            Console.Clear();
+            DisplayGuessedLetters();
+            DisplayLettersSelectedByUser();
+            DisplayHangmanItems();
             UserGivesLetter();
 
             if (char.IsLetter(PlayerLetter) == false)
@@ -185,8 +203,11 @@ namespace MultiGry
             User_SelectedLetters.Add(PlayerLetter);
         }
 
-        private void UserGivesLetter() =>
+        private void UserGivesLetter()
+        {
+            Console.WriteLine("\n" + "Podaj literę (naciśnij odpowiedni klawisz):");
             PlayerLetter = Console.ReadKey(true).KeyChar;
+        }
 
         private void ErrorMessage(string Message)
         {
@@ -226,12 +247,18 @@ namespace MultiGry
 
         private void DisplayLettersSelectedByUser()
         {
+            Console.Write("\n" + "Wprowadzane litery: ");
+
+            if (User_SelectedLetters.Count == 0)
+                Console.Write("brak");
+
             foreach (var item in User_SelectedLetters)
                 Console.Write(item + " ");
         }
 
         private void DisplayHangmanItems()
         {
+            Console.WriteLine();
             for (int i = 0; i < NumberOfUserErrors; ++i)
                 Console.WriteLine(HangmanDrawing[i]);
         }
