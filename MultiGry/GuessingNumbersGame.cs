@@ -73,11 +73,16 @@ namespace MultiGry
 
             if (UsersProposal != NumberToGuess)
             {
-                string FailedGuessMessage = UsersProposal > NumberToGuess ? "Za dużo!" : "Za mało!";
-                Console.WriteLine(FailedGuessMessage + "\n");
+                DisplayMessageAboutFailedGuessing();
                 ++UserAttempt;
-                System.Threading.Thread.Sleep(1500);
             }
+        }
+
+        private void DisplayMessageAboutFailedGuessing()
+        {
+            string FailedGuessMessage = UsersProposal > NumberToGuess ? "Za dużo!" : "Za mało!";
+            Console.WriteLine(FailedGuessMessage + "\n");
+            System.Threading.Thread.Sleep(1500);
         }
 
         private void ResultDisplay() => 

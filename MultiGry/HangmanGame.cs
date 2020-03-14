@@ -196,18 +196,15 @@ namespace MultiGry
         private bool DisplayPossibleErrorMessagesWithLetters()
         {
             if (char.IsLetter(PlayerLetter) == false)
-            {
                 ErrorMessage("To nie jest litera!");
-                return true;
-            }
 
-            if (WasLetterEntered())
-            {
-                ErrorMessage("Znak był już wprowadzany!");
-                return true;
-            }
+            else if (WasLetterEntered())
+                ErrorMessage("Znak był już wprowadzany!"); 
 
-            return false;
+            else
+                return false;
+
+            return true;
         }
 
         private void ErrorMessage(string Message)

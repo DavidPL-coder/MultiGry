@@ -14,6 +14,7 @@ namespace MultiGry
         private PlayerType PlayerTurn;
         private PlayerType Winner;
         private char[] Board;
+        private char FieldNumberSelected;
 
         public OptionsCategory OptionExecuting()
         {
@@ -70,13 +71,10 @@ namespace MultiGry
         {
             Console.WriteLine("+---+---+---+");
             DisplayBoardFieldsInThisRange(0, 2);
-            //Console.WriteLine("| {0} | {1} | {2} |", Board[0], Board[1], Board[2]);
             Console.WriteLine("+---+---+---+");
             DisplayBoardFieldsInThisRange(3, 5);
-            //Console.WriteLine("| {0} | {1} | {2} |", Board[3], Board[4], Board[5]);
             Console.WriteLine("+---+---+---+");
             DisplayBoardFieldsInThisRange(6, 8);
-            //Console.WriteLine("| {0} | {1} | {2} |", Board[6], Board[7], Board[8]);
             Console.WriteLine("+---+---+---+");
         }
 
@@ -113,24 +111,28 @@ namespace MultiGry
 
         private void TryPlayerIsSelectingField()
         {
-            char FieldNumberSelected = Console.ReadKey(true).KeyChar;
+            FieldNumberSelected = Console.ReadKey(true).KeyChar;
 
-            if (IsGivenLetterNumberBetween1And9(FieldNumberSelected))
-            {
-                int FieldIndex = (FieldNumberSelected - '0') - 1;
-                if (IsntFieldBlank(FieldIndex))
-                    throw new InvalidOperationException("To pole było już wcześniej wybrane!");
-
-                Board[FieldIndex] = (PlayerTurn == PlayerType.Circle ? 'o' : 'x');
-                PlayerTurn = (PlayerTurn == PlayerType.Circle ? PlayerType.Sharp : PlayerType.Circle);
-            }
+            if (IsGivenLetterNumberBetween1And9())
+                FinalFieldSelectionProcessing();
 
             else
                 throw new InvalidOperationException("Numerki pola są od 1 do 9!");
         }
 
-        private bool IsGivenLetterNumberBetween1And9(char FieldNumberSelected) =>
+        private bool IsGivenLetterNumberBetween1And9() =>
             char.IsDigit(FieldNumberSelected) && FieldNumberSelected != '0';
+
+        private void FinalFieldSelectionProcessing()
+        {
+            int FieldIndex = (FieldNumberSelected - '0') - 1;
+
+            if (IsntFieldBlank(FieldIndex))
+                throw new InvalidOperationException("To pole było już wcześniej wybrane!");
+
+            Board[FieldIndex] = (PlayerTurn == PlayerType.Circle ? 'o' : 'x');
+            PlayerTurn = (PlayerTurn == PlayerType.Circle ? PlayerType.Sharp : PlayerType.Circle);
+        }
 
         private bool IsntFieldBlank(int FieldIndex) =>
             Board[FieldIndex] == 'x' || Board[FieldIndex] == 'o';

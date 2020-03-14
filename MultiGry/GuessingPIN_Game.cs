@@ -91,30 +91,38 @@ namespace MultiGry
 
         private void TryToInsertDigitInDisplayedCharacters()
         {
-            if (IsSelectedKeyDigit())
+            if (ValidateUserDigit())
             {
-                if (HasDigitEverBeenEntered())
-                {
-                    DisplayMessage("Ta cyfra była już podana wcześniej!");
-                    --UserAttempt;                                                  // this will cause the user to be able to retry
-                }
+                InsertDigitInDisplayedCharacters();
+                EnteredDigitsFromUser.Add(UserDigit);
+            } 
+            
+            else
+                --UserAttempt;                                                  // this will cause the user to be able to retry
+        }
 
-                else
-                {
-                    InsertDigitInDisplayedCharacters();
-                    EnteredDigitsFromUser.Add(UserDigit);
-                }                
-            }
+        private bool ValidateUserDigit()
+        {
+            if (!IsSelectedKeyDigit())           
+                DisplayMessage("Wybrałeś klawisz inny niż klawisze 0-9!");
+
+            else if (HasDigitEverBeenEntered())
+                DisplayMessage("Ta cyfra była już podana wcześniej!");
 
             else
-            {
-                DisplayMessage("Wybrałeś klawisz inny niż klawisze 0-9!");
-                --UserAttempt;                                                  
-            }
+                return true;
+            
+            return false;
         }
 
         private bool IsSelectedKeyDigit() =>
             UserDigit >= 0 && UserDigit <= 9;
+
+        private void DisplayMessage(string Message)
+        {
+            Console.WriteLine(Message);
+            System.Threading.Thread.Sleep(1500);
+        }
 
         private bool HasDigitEverBeenEntered()
         {
@@ -123,12 +131,6 @@ namespace MultiGry
                     return true;
 
             return false;
-        }
-
-        private void DisplayMessage(string Message)
-        {
-            Console.WriteLine(Message);
-            System.Threading.Thread.Sleep(1500);
         }
 
         private void InsertDigitInDisplayedCharacters()
@@ -157,18 +159,21 @@ namespace MultiGry
         private void DisplayResults()
         {
             Console.Clear();
-
             if (UserAttempt > MaximumNumberOfAttempts)
                 Console.WriteLine("Nie zgadłeś PINu! Twój czas: " + Timer.ElapsedMilliseconds / 1000 + " sekund");
 
             else
                 Console.WriteLine("Zgadłeś PIN w ciągu " + Timer.ElapsedMilliseconds / 1000 + " sekund oraz w próbie " + UserAttempt);
 
+            DisplayPIN();
+            Console.ReadKey();
+        }
+
+        private void DisplayPIN()
+        {
             Console.Write("PIN: ");
             for (int i = 0; i < RandomPINnumbers.Length; ++i)
                 Console.Write(RandomPINnumbers[i]);
-
-            Console.ReadKey();
         }
     }
 }

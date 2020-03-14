@@ -74,10 +74,7 @@ namespace MultiGry
         }
 
         private void GetOptionNumber() =>
-            OptionNumber = GettingKey() - ConsoleKey.D0;
-
-        private ConsoleKey GettingKey() =>
-            Console.ReadKey().Key;
+            OptionNumber = Console.ReadKey().Key - ConsoleKey.D0;
 
         private bool ValidateSelectedOption() =>
             OptionNumber >= 1 && OptionNumber <= MenuOptions.Count;
@@ -109,35 +106,46 @@ namespace MultiGry
     class DecisionOnFurtherCourseOfProgram
     {
         private IMenuOption Option;
+        private ConsoleKey OptionChosenByUser;
 
         public DecisionOnFurtherCourseOfProgram(IMenuOption option) => 
             Option = option;
 
         public OptionsCategory UserDecidesWhatToDoNext()
         {
+            DisplayOptions();
+            OptionChosenByUser = Console.ReadKey().Key;
+            Console.Clear();
+
+            return ExecutingSpecificOperation();
+        }
+
+        private void DisplayOptions()
+        {
             Console.Clear();
             Console.WriteLine("Co dalej chcesz robić?");
             Console.WriteLine("1. Zagrać jeszcze raz");
             Console.WriteLine("2. Powrócić do Menu");
             Console.WriteLine("3. Wyjść z programu");
-
-            var KeyChosenByPlayer = Console.ReadKey().Key;
-            Console.Clear();
-
-            if (KeyChosenByPlayer == ConsoleKey.D1)
-                return Option.OptionExecuting();
-
-            if (KeyChosenByPlayer == ConsoleKey.D2)
-                return OptionsCategory.NormalOption;
-
-            if (KeyChosenByPlayer == ConsoleKey.D3)
-            {
-                var ExitFromProgram = new ExitOption();
-                return ExitFromProgram.OptionExecuting();
-            }
-
-            else
-                return UserDecidesWhatToDoNext();
         }
+
+        private OptionsCategory ExecutingSpecificOperation()
+        {
+            switch (OptionChosenByUser)
+            {
+                case ConsoleKey.D1:
+                    return Option.OptionExecuting();
+
+                case ConsoleKey.D2:
+                    return OptionsCategory.NormalOption;
+
+                case ConsoleKey.D3:
+                    var ExitFromProgram = new ExitOption();
+                    return ExitFromProgram.OptionExecuting();
+
+                default:
+                    return UserDecidesWhatToDoNext();
+            }
+        } 
     }
 }

@@ -38,7 +38,7 @@ namespace MultiGry
             if (DecimalNumber > 0)
             {
                 BinaryNumber.Insert(0, DecimalNumber % 2);
-                return ConversionToBinaryNumber(DecimalNumber /= 2, BinaryNumber);
+                return ConversionToBinaryNumber(DecimalNumber / 2, BinaryNumber);
             }
 
             return BinaryNumber.ToString() != "" ? BinaryNumber.ToString() : "0";

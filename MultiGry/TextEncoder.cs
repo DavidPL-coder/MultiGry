@@ -72,24 +72,19 @@ namespace MultiGry
         {
             switch (CharacterType)
             {
-                case LetterType.Lowercase:
-                    InitialCharacter = 'a';
-                    FinalCharacter = 'z';
-                    NumberOfCharactersInAllocation = 26;
-                    break;
+                case LetterType.Lowercase: SetValuesNecessaryForEncoding('a', 'z', 26); break;
 
-                case LetterType.CapitalLetter:
-                    InitialCharacter = 'A';
-                    FinalCharacter = 'Z';
-                    NumberOfCharactersInAllocation = 26;
-                    break;
+                case LetterType.CapitalLetter: SetValuesNecessaryForEncoding('A', 'Z', 26); break;
 
-                case LetterType.Digit:
-                    InitialCharacter = '0';
-                    FinalCharacter = '9';
-                    NumberOfCharactersInAllocation = 10;
-                    break;
+                case LetterType.Digit: SetValuesNecessaryForEncoding('0', '9', 10); break;
             }
+        }
+
+        private void SetValuesNecessaryForEncoding(char FirstCharacter, char LastCharacter, int NumberOfCharacters)
+        {
+            InitialCharacter = FirstCharacter;
+            FinalCharacter = LastCharacter;
+            NumberOfCharactersInAllocation = NumberOfCharacters;
         }
 
         private void CharacterEncoding()
