@@ -15,7 +15,7 @@ namespace MultiGry
 
         public OptionsCategory OptionExecuting()
         {
-            SetDefaults();
+            UserAttempt = 1;
             NumberDraw();
             UserAttemptsToGuessNumber();   
             ResultDisplay();
@@ -25,9 +25,6 @@ namespace MultiGry
             return ProgramExecution.UserDecidesWhatToDoNext();
         }
 
-
-        private void SetDefaults() =>
-            UserAttempt = 1;
 
         private void NumberDraw()
         {

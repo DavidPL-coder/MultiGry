@@ -10,7 +10,7 @@ namespace MultiGry
     {
         public string NameOption => "Wisielec";
         private string[] HangmanDrawing;
-        private List<char> User_SelectedLetters;
+        private List<char> LettersSelectedByUser;
         private int NumberOfUserErrors;
         private Random GeneratorNumber;
         private string RandomWord;
@@ -20,12 +20,12 @@ namespace MultiGry
 
         public HangmanGame()
         {
-            SetHangmanGrawing();
-            User_SelectedLetters = new List<char>();
+            SetHangmanDrawing();
+            LettersSelectedByUser = new List<char>();
             GeneratorNumber = new Random();    
         }
 
-        private void SetHangmanGrawing()
+        private void SetHangmanDrawing()
         {
             HangmanDrawing = new string[]
             {
@@ -65,7 +65,7 @@ namespace MultiGry
             NumberOfUserErrors = 0;
             DrawWordToGuess();
             SetDefaultValueForGuessedLetters();
-            User_SelectedLetters.Clear();
+            LettersSelectedByUser.Clear();
         }
 
         private void DrawWordToGuess()
@@ -79,7 +79,7 @@ namespace MultiGry
             Properties.Resources.HangmanGameWords.Split(new string[] { "\r\n", " ", "\t" }, 
                                                         StringSplitOptions.RemoveEmptyEntries);
 
-        // if the letter is not guessed, underscore is inserted
+        // in place of unguessed letters there is an underline:
         private void SetDefaultValueForGuessedLetters()
         {
             var tmp = new StringBuilder();
@@ -128,10 +128,10 @@ namespace MultiGry
         {
             Console.Write("\n" + "Wprowadzane litery: ");
 
-            if (User_SelectedLetters.Count == 0)
+            if (LettersSelectedByUser.Count == 0)
                 Console.Write("brak");
 
-            foreach (var item in User_SelectedLetters)
+            foreach (var item in LettersSelectedByUser)
                 Console.Write(item + " ");
         }
 
@@ -164,7 +164,7 @@ namespace MultiGry
             DisplayGameInterfaceWithoutOptions();
             UserGivesLetter();
             LetterProcessingFromUser();
-            User_SelectedLetters.Add(PlayerLetter);
+            LettersSelectedByUser.Add(PlayerLetter);
         }
 
         private void DisplayGameInterfaceWithoutOptions()
@@ -216,7 +216,7 @@ namespace MultiGry
 
         private bool WasLetterEntered()
         {
-            foreach (var item in User_SelectedLetters)
+            foreach (var item in LettersSelectedByUser)
                 if (item == PlayerLetter)
                     return true;
 

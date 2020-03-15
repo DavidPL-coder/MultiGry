@@ -10,7 +10,10 @@ namespace MultiGry
     {
         public string NameOption => "Kółko i krzyżyk dla dwóch osób";
         private int TurnNumber;
-        private enum PlayerType { Nobody, Circle, Sharp }
+        private enum PlayerType
+        {
+            Nobody, Circle, Sharp
+        }
         private PlayerType PlayerTurn;
         private PlayerType Winner;
         private char[] Board;

@@ -14,7 +14,10 @@ namespace MultiGry
         private const int HorizontalDimensionOfBoard = 8;
         private List<Tuple<int, int>> CoordinatesOfMinesDrawn;
         private Random NumberGenerator;
-        private enum GameStatus { DuringGame, PlayerLost, PlayerWin, Break }
+        private enum GameStatus
+        {
+            DuringGame, PlayerLost, PlayerWin, Break
+        }
         private GameStatus StatusOfGame;
         private Stopwatch GameTime;
         private string SelectedIndexesInTextVersion;
@@ -40,7 +43,7 @@ namespace MultiGry
             GameTime.Start();
             PlayingGame();
 
-            DisplayBoard();
+            DisplayBoardContent();
             GameTime.Stop();
             DisplayGameResult();
 
@@ -77,7 +80,7 @@ namespace MultiGry
         {
             while (StatusOfGame == GameStatus.DuringGame)
             {
-                DisplayBoard();
+                DisplayBoardContent();
                 if (IsThereFirstRound)
                     StartingGame();
 
@@ -86,7 +89,7 @@ namespace MultiGry
             }
         }
 
-        private void DisplayBoard()
+        private void DisplayBoardContent()
         {          
             Console.Clear();
             Console.WriteLine("  1 2 3 4 5 6 7 8");
@@ -148,7 +151,7 @@ namespace MultiGry
             int IndexCounter = 0;
             foreach (var item in SelectedIndexesInTextVersion)
             {
-                if (CheckIfValueIsNumberBetween1And8(item))
+                if (CheckIsValueNumberBetween1And8(item))
                     ++IndexCounter;
 
                 else if (item != ' ' && item != '\t')
@@ -157,7 +160,7 @@ namespace MultiGry
             return IndexCounter == 2;
         }
 
-        private bool CheckIfValueIsNumberBetween1And8(char Value) => 
+        private bool CheckIsValueNumberBetween1And8(char Value) => 
             (Value - '0') >= 1 && (Value - '0') <= 8;
 
         private void PreparingToPlayGame()
@@ -176,10 +179,10 @@ namespace MultiGry
         {
             int VerticalIndex = -1, HorizontalIndex = -1;
             foreach (char item in SelectedIndexesInTextVersion)
-                if (CheckIfValueIsNumberBetween1And8(item))
+                if (CheckIsValueNumberBetween1And8(item))
                 {
                     if (VerticalIndex == -1)
-                        VerticalIndex = item - '1'; // we convert "item" to int and then subtract one later we assign it to "FirstIndex"
+                        VerticalIndex = item - '1'; // we convert "item" to int and then subtract one later we assign it to "VerticalIndex"
 
                     else
                         HorizontalIndex = item - '1';
@@ -219,8 +222,7 @@ namespace MultiGry
 
         private void SetTopAndBottomOfSquare()
         {
-            bool AreFieldsToBeUncoveredUpwards = NumberGenerator.Next(0, 2) == 1;
-            if (AreFieldsToBeUncoveredUpwards)
+            if (AreFieldsToBeUncoveredUpwards())
             {
                 SquareOfExposedFields.Top = IndexesOfField.Item1 - 2;
                 SquareOfExposedFields.Bottom = IndexesOfField.Item1;
@@ -233,10 +235,12 @@ namespace MultiGry
             }
         }
 
+        private bool AreFieldsToBeUncoveredUpwards() => 
+            NumberGenerator.Next(0, 2) == 1;
+
         private void SetLeftAndRightOfSquare()
         {
-            bool AreFieldsToBeUncoveredLeft = NumberGenerator.Next(0, 2) == 1;
-            if (AreFieldsToBeUncoveredLeft)
+            if (AreFieldsToBeUncoveredLeft())
             {
                 SquareOfExposedFields.Left = IndexesOfField.Item2 - 2;
                 SquareOfExposedFields.Right = IndexesOfField.Item2;
@@ -248,6 +252,9 @@ namespace MultiGry
                 SquareOfExposedFields.Right = IndexesOfField.Item2 + 2;
             }
         }
+
+        private bool AreFieldsToBeUncoveredLeft() => 
+            NumberGenerator.Next(0, 2) == 1;
 
         private void LoadNumberOfMinesIntoDisplayedBoard()
         {
