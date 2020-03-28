@@ -6,17 +6,6 @@ using System.Threading.Tasks;
 
 namespace MultiGry
 {
-    enum OptionsCategory
-    {
-        NotSelectedYet, NormalOption, Wrong, ExitTheProgram, CanceledExit
-    }
-
-    interface IMenuOption
-    {
-        OptionsCategory OptionExecuting();
-        string NameOption { get; }
-    }
-
     class MainMenu
     {
         private int OptionNumber;

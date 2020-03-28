@@ -43,8 +43,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AllGlobalEnumsAndStructsAndInterfaces.cs" />
     <Compile Include="BinaryClockOption.cs" />
-    <Compile Include="MinesweeperGame.cs" />
+    <Compile Include="GameDuration.cs" />
+    <Compile Include="MinesweeperOption\BoardDisplay.cs" />
+    <Compile Include="MinesweeperOption\BoardSetter.cs" />
+    <Compile Include="MinesweeperOption\ManagerOfSelectedFieldIndexes.cs" />
+    <Compile Include="MinesweeperOption\MinesCounterOnBoard.cs" />
+    <Compile Include="MinesweeperOption\MinesSetter.cs" />
+    <Compile Include="MinesweeperOption\MinesweeperGame.cs" />
+    <Compile Include="MinesweeperOption\PerformerRoundPlayed.cs" />
+    <Compile Include="MinesweeperOption\SetterSquareOfExposedFields.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -73,5 +82,6 @@
   <ItemGroup>
     <None Include="Properties\HangmanGameWords.txt" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
