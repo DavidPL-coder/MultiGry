@@ -18,7 +18,7 @@ namespace MultiGry
         public MinesSetter(MinesweeperGame Game)
         {
             ActualBoardContent = Game.ActualBoardContent;
-            IndexesOfField = Game.SelectedFieldIndexes?.TupleOfIndexes;
+            IndexesOfField = Game.SelectedFieldIndexes.TupleOfIndexes;
 
             VerticalDimensionOfBoard = MinesweeperGame.VerticalDimensionOfBoard;
             HorizontalDimensionOfBoard = MinesweeperGame.HorizontalDimensionOfBoard;

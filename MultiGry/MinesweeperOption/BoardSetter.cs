@@ -13,7 +13,7 @@ namespace MultiGry
         private readonly int VerticalDimensionOfBoard;
         private readonly int HorizontalDimensionOfBoard;
 
-        public BoardSetter(MinesweeperGame Game)
+        public BoardSetter()
         {
             VerticalDimensionOfBoard = MinesweeperGame.VerticalDimensionOfBoard;
             HorizontalDimensionOfBoard = MinesweeperGame.HorizontalDimensionOfBoard;

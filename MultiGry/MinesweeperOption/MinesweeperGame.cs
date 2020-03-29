@@ -19,11 +19,10 @@ namespace MultiGry
         public OptionsCategory OptionExecuting()
         {
             SetDefaults();           
-            PlayingGame();          
-            DisplayGameResult();
+            PlayingGame();
 
             if (StatusOfGame != MinesweeperGameStatus.Break)
-                Console.ReadKey();
+                DisplayGameResult();
 
             var ProgramExecution = new DecisionOnFurtherCourseOfProgram(this);
             return ProgramExecution.UserDecidesWhatToDoNext();
@@ -39,7 +38,7 @@ namespace MultiGry
 
         private void SetBoard()
         {
-            var BoardSetter = new BoardSetter(this);
+            var BoardSetter = new BoardSetter();
             BoardSetter.CreateBoard();
             DisplayedBoard = BoardSetter.DisplayedBoard;
             ActualBoardContent = BoardSetter.ActualBoardContent;
@@ -117,10 +116,10 @@ namespace MultiGry
         {
             var PerformerRoundPlayed = new PerformerRoundPlayed(this);
             PerformerRoundPlayed.DisplayOptionsToSelectFrom();
-            var KeySelectedByUser = Console.ReadKey(true).Key;
+            var Key = Console.ReadKey(true).Key;
 
-            if (KeySelectedByUser >= ConsoleKey.D1 && KeySelectedByUser <= ConsoleKey.D5)
-                PerformerRoundPlayed.PerformOperationsForSelectedOption(KeySelectedByUser);
+            if (Key >= ConsoleKey.D1 && Key <= ConsoleKey.D5)
+                PerformerRoundPlayed.PerformOperationsForSelectedOption(Key);
 
             else
                 PerformerRoundPlayed.DisplayWrongOptionNumberMessage();
@@ -128,17 +127,16 @@ namespace MultiGry
             StatusOfGame = PerformerRoundPlayed.StatusOfGame;
         }
 
+        // method should be called only for StatusOfGame equal to PlayerWin or PlayerLost
         private void DisplayGameResult()
         {
             DisplayBoardContent();
 
-            if (StatusOfGame == MinesweeperGameStatus.PlayerWin)
-                Console.WriteLine("Brawo! Wygrałeś!");
-
-            if (StatusOfGame == MinesweeperGameStatus.PlayerLost)
-                Console.WriteLine("Niestety! Nie udało ci się!");
+            string Message = StatusOfGame == MinesweeperGameStatus.PlayerWin ? "Brawo! Wygrałeś!" : "Niestety! Nie udało ci się!";
+            Console.WriteLine(Message);
 
             Console.WriteLine("Twój czas: " + GameTime.GetTimeInTextVersion());
+            Console.ReadKey();
         }   
     }
 }

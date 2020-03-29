@@ -9,31 +9,31 @@ namespace MultiGry
 {
     class GameDuration
     {
-        private Stopwatch GameTime;
+        private Stopwatch Time;
         private const long MinuteInMilliseconds = 60000;
 
         public GameDuration() => 
-            GameTime = new Stopwatch();
+            Time = new Stopwatch();
 
         public void Start() =>
-            GameTime.Start();
+            Time.Start();
 
         public void Stop() =>
-            GameTime.Stop();
+            Time.Stop();
 
         public string GetTimeInTextVersion() => 
-            GameTime.ElapsedMilliseconds < MinuteInMilliseconds ? GetSeconds() : GetMinutesAndSeconds();
+            Time.ElapsedMilliseconds < MinuteInMilliseconds ? GetSeconds() : GetMinutesAndSeconds();
 
         private string GetSeconds()
         {
-            long Seconds = GameTime.ElapsedMilliseconds / 1000;
+            long Seconds = Time.ElapsedMilliseconds / 1000;
             return Seconds.ToString() + " s";
         }
 
         private string GetMinutesAndSeconds()
         {
-            long Minutes = GameTime.ElapsedMilliseconds / MinuteInMilliseconds;
-            long Seconds = GameTime.ElapsedMilliseconds % MinuteInMilliseconds / 1000;
+            long Minutes = Time.ElapsedMilliseconds / MinuteInMilliseconds;
+            long Seconds = Time.ElapsedMilliseconds % MinuteInMilliseconds / 1000;
             return Minutes.ToString() + " m " + Seconds.ToString() + " s";
         } 
     }

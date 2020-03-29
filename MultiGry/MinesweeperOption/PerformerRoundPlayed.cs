@@ -12,9 +12,6 @@ namespace MultiGry
         public MinesweeperGameStatus StatusOfGame { private set; get; }
         private char[,] DisplayedBoard;
         private readonly char[,] ActualBoardContent;
-        private readonly int VerticalDimensionOfBoard;
-        private readonly int HorizontalDimensionOfBoard;
-        private GameDuration GameTime;
         private readonly MinesweeperGame minesweeperGame;
 
         public PerformerRoundPlayed(MinesweeperGame Game)
@@ -22,10 +19,6 @@ namespace MultiGry
             StatusOfGame = Game.StatusOfGame;
             DisplayedBoard = Game.DisplayedBoard;
             ActualBoardContent = Game.ActualBoardContent;
-            GameTime = Game.GameTime;
-
-            VerticalDimensionOfBoard = MinesweeperGame.VerticalDimensionOfBoard;
-            HorizontalDimensionOfBoard = MinesweeperGame.HorizontalDimensionOfBoard;
 
             minesweeperGame = Game;
         }
@@ -69,7 +62,7 @@ namespace MultiGry
         }
 
         private void DisplayElapsedGameTime() =>
-            DisplayMessage("Czas: " + GameTime.GetTimeInTextVersion());
+            DisplayMessage("Czas: " + minesweeperGame.GameTime.GetTimeInTextVersion());
 
         private void UserInputOfFieldIndexes()
         {
@@ -141,8 +134,8 @@ namespace MultiGry
 
         private bool DidPlayerRevealAllEmptyFields()
         {
-            for (int i = 0; i < VerticalDimensionOfBoard; ++i)
-                for (int j = 0; j < HorizontalDimensionOfBoard; ++j)
+            for (int i = 0; i < MinesweeperGame.VerticalDimensionOfBoard; ++i)
+                for (int j = 0; j < MinesweeperGame.HorizontalDimensionOfBoard; ++j)
                     if (ActualBoardContent[i, j] == 'O' && DisplayedBoard[i, j] == '■')
                         return false;
 
@@ -151,8 +144,8 @@ namespace MultiGry
 
         private void UnveilingAllMines()
         {
-            for (int i = 0; i < VerticalDimensionOfBoard; ++i)
-                for (int j = 0; j < HorizontalDimensionOfBoard; ++j)
+            for (int i = 0; i < MinesweeperGame.VerticalDimensionOfBoard; ++i)
+                for (int j = 0; j < MinesweeperGame.HorizontalDimensionOfBoard; ++j)
                     if (ActualBoardContent[i, j] == '*')
                         DisplayedBoard[i, j] = '*';
         }
