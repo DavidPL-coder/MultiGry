@@ -43,32 +43,58 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AllGlobalEnumsAndStructsAndInterfaces.cs" />
-    <Compile Include="BinaryClockOption.cs" />
+    <Compile Include="BinaryClock\BinaryClockOption.cs" />
+    <Compile Include="DecisionOnFurtherCourseOfProgram.cs" />
+    <Compile Include="Exit\ExitOption.cs" />
+    <Compile Include="FilesEncryptor\FilesEncryptorOption.cs" />
+    <Compile Include="FilesEncryptor\EncoderFile.cs" />
+    <Compile Include="FilesEncryptor\EncoderOperations.cs" />
+    <Compile Include="FilesEncryptor\FileContentDisplay.cs" />
+    <Compile Include="FilesEncryptor\FileCreator.cs" />
+    <Compile Include="FilesEncryptor\WindowsNotebook.cs" />
     <Compile Include="GameDuration.cs" />
-    <Compile Include="MinesweeperOption\BoardDisplay.cs" />
-    <Compile Include="MinesweeperOption\BoardSetter.cs" />
-    <Compile Include="MinesweeperOption\ManagerOfSelectedFieldIndexes.cs" />
-    <Compile Include="MinesweeperOption\MinesCounterOnBoard.cs" />
-    <Compile Include="MinesweeperOption\MinesSetter.cs" />
-    <Compile Include="MinesweeperOption\MinesweeperGame.cs" />
-    <Compile Include="MinesweeperOption\PerformerRoundPlayed.cs" />
-    <Compile Include="MinesweeperOption\SetterSquareOfExposedFields.cs" />
+    <Compile Include="GuessingPIN\GameInterfaceDisplay.cs" />
+    <Compile Include="GuessingPIN\PerformerRoundOfGame.cs" />
+    <Compile Include="Hangman\HangmanCartoonist.cs" />
+    <Compile Include="Hangman\HangmanGameInterface.cs" />
+    <Compile Include="Hangman\PerformerOfSelectedPlayerOption.cs" />
+    <Compile Include="Hangman\GetterRandomWordAndDisplayedCharacters.cs" />
+    <Compile Include="IMenuOption.cs" />
+    <Compile Include="MainMenu.cs" />
+    <Compile Include="Minesweeper\GameStatus.cs" />
+    <Compile Include="Minesweeper\GetterSquareOfExposedFields.cs" />
+    <Compile Include="Minesweeper\BoardDisplay.cs" />
+    <Compile Include="Minesweeper\BoardSetter.cs" />
+    <Compile Include="Minesweeper\ManagerOfFieldIndexes.cs" />
+    <Compile Include="Minesweeper\MinesCounter.cs" />
+    <Compile Include="Minesweeper\MinesSetter.cs" />
+    <Compile Include="Minesweeper\MinesweeperGame.cs" />
+    <Compile Include="Minesweeper\PerformerRoundPlayed.cs" />
+    <Compile Include="OptionsCategory.cs" />
+    <Compile Include="PaperRockScissors\GetterNumberOfRounds.cs" />
+    <Compile Include="PaperRockScissors\HandShapes.cs" />
+    <Compile Include="PaperRockScissors\PerformerRounds.cs" />
+    <Compile Include="PaperRockScissors\RoundResultDisplay.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="TextEncoder.cs" />
-    <Compile Include="FilesEncryptionOption.cs" />
-    <Compile Include="GuessingNumbersGame.cs" />
-    <Compile Include="GuessingPIN_Game.cs" />
-    <Compile Include="HangmanGame.cs" />
-    <Compile Include="MainFunctionalities.cs" />
-    <Compile Include="PaperRockScissorsGame.cs" />
+    <Compile Include="Minesweeper\Rect.cs" />
+    <Compile Include="FilesEncryptor\ReaderFile.cs" />
+    <Compile Include="FilesEncryptor\TextEncoder.cs" />
+    <Compile Include="GuessingNumbers\GuessingNumbersGame.cs" />
+    <Compile Include="GuessingPIN\GuessingPIN_Game.cs" />
+    <Compile Include="Hangman\HangmanGame.cs" />
+    <Compile Include="PaperRockScissors\PaperRockScissorsGame.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TicTacToeGame.cs" />
+    <Compile Include="TicTacToe\GameInterfaceDisplay.cs" />
+    <Compile Include="TicTacToe\Judge.cs" />
+    <Compile Include="TicTacToe\PerformerRounds.cs" />
+    <Compile Include="TicTacToe\TicTacToeGame.cs" />
+    <Compile Include="TicTacToe\FieldSelection.cs" />
+    <Compile Include="TicTacToe\PlayerType.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

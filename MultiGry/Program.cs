@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MultiGry
 {
@@ -10,17 +7,18 @@ namespace MultiGry
     {
         static List<IMenuOption> GetListOfMenuOption()
         {
-            var options = new List<IMenuOption>();
-
-            options.Add(new PaperRockScissorsGame());
-            options.Add(new GuessingNumbersGame());
-            options.Add(new GuessingPIN_Game());
-            options.Add(new BinaryClockOption());
-            options.Add(new HangmanGame());
-            options.Add(new TicTacToeGame());
-            options.Add(new FilesEncryptionOption());
-            options.Add(new MinesweeperGame());
-            options.Add(new ExitOption());
+            var options = new List<IMenuOption>
+            {
+                new PaperRockScissors.PaperRockScissorsGame(),
+                new GuessingNumbers.GuessingNumbersGame(),
+                new GuessingPIN.GuessingPIN_Game(),
+                new BinaryClock.BinaryClockOption(),
+                new Hangman.HangmanGame(),
+                new TicTacToe.TicTacToeGame(),
+                new FilesEncryptor.FilesEncryptorOption(),
+                new Minesweeper.MinesweeperGame(),
+                new Exit.ExitOption()
+            };
 
             return options;
         }
@@ -28,7 +26,8 @@ namespace MultiGry
         static void Main(string[] args)
         {
             Console.ForegroundColor = ConsoleColor.White;
-            MainMenu Menu = new MainMenu(GetListOfMenuOption());
+            var MenuOptions = GetListOfMenuOption();
+            var Menu = new MainMenu(MenuOptions);
             Menu.ExecutingMainMenuOperation();
         }
     }
