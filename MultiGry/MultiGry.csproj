@@ -8,10 +8,11 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>MultiGry</RootNamespace>
     <AssemblyName>MultiGry</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -44,27 +45,57 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BinaryClock\BinaryClockOption.cs" />
-    <Compile Include="DecisionOnFurtherCourseOfProgram.cs" />
+    <Compile Include="BinaryClock\BinaryNumberConverter.cs" />
+    <Compile Include="DecisionOnFurtherCourseOfProgram\DecisionOnFurtherCourseOfProgram.cs" />
     <Compile Include="Exit\ExitOption.cs" />
+    <Compile Include="BinaryClock\TimeDisplay.cs" />
+    <Compile Include="FakeConsole\FakeConsole.cs" />
+    <Compile Include="FilesEncryptor\FakeFile\FakeFile.cs" />
+    <Compile Include="FilesEncryptor\WindowsNotebook\FakeProcess.cs" />
     <Compile Include="FilesEncryptor\FilesEncryptorOption.cs" />
-    <Compile Include="FilesEncryptor\EncoderFile.cs" />
+    <Compile Include="FilesEncryptor\EncoderFile\EncoderFile.cs" />
     <Compile Include="FilesEncryptor\EncoderOperations.cs" />
-    <Compile Include="FilesEncryptor\FileContentDisplay.cs" />
-    <Compile Include="FilesEncryptor\FileCreator.cs" />
-    <Compile Include="FilesEncryptor\WindowsNotebook.cs" />
+    <Compile Include="FilesEncryptor\FileContentDisplay\FileContentDisplay.cs" />
+    <Compile Include="FilesEncryptor\FileCreator\FileCreator.cs" />
+    <Compile Include="FilesEncryptor\GetterFilePath.cs" />
+    <Compile Include="FilesEncryptor\EncoderFile\IEncoderFile.cs" />
+    <Compile Include="FilesEncryptor\FakeFile\IFakeFile.cs" />
+    <Compile Include="FilesEncryptor\FileContentDisplay\IFileContentDisplay.cs" />
+    <Compile Include="FilesEncryptor\FileCreator\IFileCreator.cs" />
+    <Compile Include="FilesEncryptor\WindowsNotebook\IProcess.cs" />
+    <Compile Include="FilesEncryptor\WindowsNotebook\IWindowsNotebook.cs" />
+    <Compile Include="FilesEncryptor\MessageDisplay.cs" />
+    <Compile Include="FilesEncryptor\RequestDisplay.cs" />
+    <Compile Include="FilesEncryptor\WindowsNotebook\SurrogateProcess.cs" />
+    <Compile Include="FilesEncryptor\WindowsNotebook\WindowsNotebook.cs" />
     <Compile Include="GameDuration.cs" />
+    <Compile Include="GuessingNumbers\GetterProposalFromUser.cs" />
+    <Compile Include="GuessingNumbers\PerformerGame\IPerformerGame.cs" />
+    <Compile Include="RandomGenerator\INumberGenerator.cs" />
+    <Compile Include="GuessingNumbers\ResultDisplay\IResultDisplay.cs" />
+    <Compile Include="GuessingNumbers\PerformerGame\PerformerGame.cs" />
+    <Compile Include="RandomGenerator\NumberGenerator.cs" />
+    <Compile Include="GuessingNumbers\ResultDisplay\ResultDisplay.cs" />
     <Compile Include="GuessingPIN\GameInterfaceDisplay.cs" />
     <Compile Include="GuessingPIN\PerformerRoundOfGame.cs" />
     <Compile Include="Hangman\HangmanCartoonist.cs" />
     <Compile Include="Hangman\HangmanGameInterface.cs" />
     <Compile Include="Hangman\PerformerOfSelectedPlayerOption.cs" />
     <Compile Include="Hangman\GetterRandomWordAndDisplayedCharacters.cs" />
+    <Compile Include="DecisionOnFurtherCourseOfProgram\IDecisionOnFurtherCourseOfProgram.cs" />
+    <Compile Include="FakeConsole\IFakeConsole.cs" />
+    <Compile Include="Menu\IMenuDisplay.cs" />
     <Compile Include="IMenuOption.cs" />
-    <Compile Include="MainMenu.cs" />
+    <Compile Include="Menu\ISelectorOption.cs" />
+    <Compile Include="Menu\MainMenu.cs" />
+    <Compile Include="Menu\MenuDisplay.cs" />
+    <Compile Include="Minesweeper\GameStarter.cs" />
     <Compile Include="Minesweeper\GameStatus.cs" />
+    <Compile Include="Minesweeper\GetterColorForCharacter.cs" />
     <Compile Include="Minesweeper\GetterSquareOfExposedFields.cs" />
     <Compile Include="Minesweeper\BoardDisplay.cs" />
     <Compile Include="Minesweeper\BoardSetter.cs" />
+    <Compile Include="Minesweeper\IGetterColorForCharacter.cs" />
     <Compile Include="Minesweeper\ManagerOfFieldIndexes.cs" />
     <Compile Include="Minesweeper\MinesCounter.cs" />
     <Compile Include="Minesweeper\MinesSetter.cs" />
@@ -89,6 +120,7 @@
     <Compile Include="PaperRockScissors\PaperRockScissorsGame.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Menu\SelectorOption.cs" />
     <Compile Include="TicTacToe\GameInterfaceDisplay.cs" />
     <Compile Include="TicTacToe\Judge.cs" />
     <Compile Include="TicTacToe\PerformerRounds.cs" />

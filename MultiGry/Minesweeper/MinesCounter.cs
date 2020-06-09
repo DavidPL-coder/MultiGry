@@ -1,74 +1,67 @@
-﻿namespace MultiGry.Minesweeper
+﻿using System;
+
+namespace MultiGry.Minesweeper
 {
-    class MinesCounter
+    public class MinesCounter
     {
-        private char[,] DisplayedBoard;
-        private readonly char[,] ActualBoardContent;
-        private readonly Rect ExposedFields;
-        private readonly int VerticalDimension;
-        private readonly int HorizontalDimension;
+        private char[,] displayedBoard;
+        private readonly char[,] actualBoardContent;
+        private readonly Rect exposedFields;
 
-        public MinesCounter(MinesweeperGame Game, Rect SquareOfExposedFields)
+        public MinesCounter(char[,] displayedBoard, char[,] actualBoardContent, Rect squareOfExposedFields)
         {
-            DisplayedBoard = Game.DisplayedBoard;
-            ActualBoardContent = Game.ActualBoardContent;
-            ExposedFields = SquareOfExposedFields;
-
-            VerticalDimension = MinesweeperGame.VerticalDimensionOfBoard;
-            HorizontalDimension = MinesweeperGame.HorizontalDimensionOfBoard;
+            this.displayedBoard = displayedBoard;
+            this.actualBoardContent = actualBoardContent;
+            exposedFields = squareOfExposedFields;
         }
 
         public void LoadNumberOfMinesIntoDisplayedBoard()
         {
-            for (int i = ExposedFields.Top; i <= ExposedFields.Bottom; ++i)
+            for (int i = exposedFields.Top; i <= exposedFields.Bottom; ++i)
             {
-                for (int j = ExposedFields.Left; j <= ExposedFields.Right; ++j)
+                for (int j = exposedFields.Left; j <= exposedFields.Right; ++j)
+                {
                     if (CanNumberOfMinesBeDisplayedInField(i, j))
                         DisplayNumberOfMinesInField(i, j);
+                }
             }
         }
 
         private bool CanNumberOfMinesBeDisplayedInField(int i, int j) => 
-            IsThereFieldWithSuchIndex(i, j) && 
-            ActualBoardContent[i, j] != MinesweeperGame.BombSign;
+            IsThereFieldWithSuchIndex(i, j) && actualBoardContent[i, j] != MinesweeperGame.BombSign;
 
         private bool IsThereFieldWithSuchIndex(int i, int j) =>
-            i >= 0 &&
-            i < VerticalDimension &&
-            j >= 0 &&
-            j < HorizontalDimension;
+            i >= 0 && i < MinesweeperGame.VerticalDimensionOfBoard && 
+            j >= 0 && j < MinesweeperGame.HorizontalDimensionOfBoard;
 
-        public int DisplayNumberOfMinesInField(int VerticalIndex, int HorizontalIndex)
+        public int DisplayNumberOfMinesInField(int verticalIndex, int horizontalIndex)
         {
-            int NumberDisplayedInGivenField = 
-                CalculateHowManyMinesAreAroundField(VerticalIndex, HorizontalIndex);
+            int numberDisplayedInGivenField = CalculateHowManyMinesAreAroundField(verticalIndex, horizontalIndex);
 
-            if (NumberDisplayedInGivenField != 0)
-                DisplayedBoard[VerticalIndex, HorizontalIndex] = 
-                    NumberDisplayedInGivenField.ToString()[0]; // Convert int to char
+            if (numberDisplayedInGivenField != 0)
+                displayedBoard[verticalIndex, horizontalIndex] = numberDisplayedInGivenField.ToString()[0];
 
             else
-                DisplayedBoard[VerticalIndex, HorizontalIndex] = 
-                    MinesweeperGame.EmptyFieldSign;
+                displayedBoard[verticalIndex, horizontalIndex] = MinesweeperGame.EmptyFieldSign;
 
-            return NumberDisplayedInGivenField;
+            return numberDisplayedInGivenField;
         }
 
-        private int CalculateHowManyMinesAreAroundField(int VerticalIndex, 
-                                                        int HorizontalIndex)
+        private int CalculateHowManyMinesAreAroundField(int verticalIndex, int horizontalIndex)
         {
-            int NumberDisplayedInGivenField = 0;
-            for (int i = VerticalIndex - 1; i <= VerticalIndex + 1; ++i)
+            int numberDisplayedInGivenField = 0;
+            for (int i = verticalIndex - 1; i <= verticalIndex + 1; ++i)
             {
-                for (int j = HorizontalIndex - 1; j <= HorizontalIndex + 1; ++j)
+                for (int j = horizontalIndex - 1; j <= horizontalIndex + 1; ++j)
+                {
                     if (IsThereBombInTheField(i, j))
-                        ++NumberDisplayedInGivenField;
+                        ++numberDisplayedInGivenField;
+                }
             }
-            return NumberDisplayedInGivenField;
+            return numberDisplayedInGivenField;
         }
 
         private bool IsThereBombInTheField(int i, int j) => 
-            IsThereFieldWithSuchIndex(i, j) && 
-            ActualBoardContent[i, j] == MinesweeperGame.BombSign;
+            IsThereFieldWithSuchIndex(i, j) && actualBoardContent[i, j] == MinesweeperGame.BombSign;
     }
 }

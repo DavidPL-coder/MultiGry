@@ -4,24 +4,24 @@ namespace MultiGry.Minesweeper
 {
     class GetterSquareOfExposedFields
     {
-        private Tuple<int, int> SelectedIndexes;
-        private Rect Square;
-        private Random NumberGenerator; 
+        private readonly Tuple<int, int> selectedIndexes;
+        private Rect square;
+        private readonly Random numberGenerator; 
 
-        public GetterSquareOfExposedFields(Tuple<int, int> SelectedIndexes)
+        public GetterSquareOfExposedFields(Tuple<int, int> selectedIndexes)
         {
-            this.SelectedIndexes = SelectedIndexes;
-            NumberGenerator = new Random();
+            this.selectedIndexes = selectedIndexes;
+            numberGenerator = new Random();
         }
 
         public Rect GetSquareAroundSelectedField()
         {
-            Square.Left = SelectedIndexes.Item2 - 1;
-            Square.Top = SelectedIndexes.Item1 - 1;
-            Square.Right = SelectedIndexes.Item2 + 1;
-            Square.Bottom = SelectedIndexes.Item1 + 1;
+            square.Left = selectedIndexes.Item2 - 1;
+            square.Top = selectedIndexes.Item1 - 1;
+            square.Right = selectedIndexes.Item2 + 1;
+            square.Bottom = selectedIndexes.Item1 + 1;
 
-            return Square;
+            return square;
         }
 
         public Rect GetRandomSquare()
@@ -29,43 +29,43 @@ namespace MultiGry.Minesweeper
             SetTopAndBottomOfSquare();
             SetLeftAndRightOfSquare();
 
-            return Square;
+            return square;
         }
 
         private void SetTopAndBottomOfSquare()
         {
             if (AreFieldsToBeUncoveredUpwards())
             {
-                Square.Top = SelectedIndexes.Item1 - 2;
-                Square.Bottom = SelectedIndexes.Item1;
+                square.Top = selectedIndexes.Item1 - 2;
+                square.Bottom = selectedIndexes.Item1;
             }
 
             else
             {
-                Square.Top = SelectedIndexes.Item1;
-                Square.Bottom = SelectedIndexes.Item1 + 2;
+                square.Top = selectedIndexes.Item1;
+                square.Bottom = selectedIndexes.Item1 + 2;
             }
         }
 
         private bool AreFieldsToBeUncoveredUpwards() =>
-            NumberGenerator.Next(2) == 1;
+            numberGenerator.Next(2) == 1;
 
         private void SetLeftAndRightOfSquare()
         {
             if (AreFieldsToBeUncoveredLeft())
             {
-                Square.Left = SelectedIndexes.Item2 - 2;
-                Square.Right = SelectedIndexes.Item2;
+                square.Left = selectedIndexes.Item2 - 2;
+                square.Right = selectedIndexes.Item2;
             }
 
             else
             {
-                Square.Left = SelectedIndexes.Item2;
-                Square.Right = SelectedIndexes.Item2 + 2;
+                square.Left = selectedIndexes.Item2;
+                square.Right = selectedIndexes.Item2 + 2;
             }
         }
 
         private bool AreFieldsToBeUncoveredLeft() =>
-            NumberGenerator.Next(2) == 1;
+            numberGenerator.Next(2) == 1;
     }
 }

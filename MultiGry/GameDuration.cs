@@ -2,7 +2,7 @@
 
 namespace MultiGry
 {
-    class GameDuration
+    public class GameDuration
     {
         private Stopwatch Time;
         private const long MinuteInMilliseconds = 60000;

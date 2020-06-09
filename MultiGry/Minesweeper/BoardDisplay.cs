@@ -1,60 +1,60 @@
 ﻿using System;
+using System.Text;
 
 namespace MultiGry.Minesweeper
 {
-    class BoardDisplay
+    public class BoardDisplay
     {
-        private readonly char[,] DisplayedBoard;
-        private readonly int VerticalDimension;
-        private readonly int HorizontalDimension;
+        private readonly char[,] displayedBoard;
+        private IFakeConsole dummyConsole;
+        private IGetterColorForCharacter getterColor;
 
-        public BoardDisplay(char[,] DisplayedBoard)
+        public BoardDisplay(char[,] displayedBoard)
         {
-            this.DisplayedBoard = DisplayedBoard;
-            VerticalDimension = MinesweeperGame.VerticalDimensionOfBoard;
-            HorizontalDimension = MinesweeperGame.HorizontalDimensionOfBoard;
+            this.displayedBoard = displayedBoard;
+            dummyConsole = new FakeConsole();
+            getterColor = new GetterColorForCharacter(displayedBoard);
+        }
+
+        public BoardDisplay(char[,] displayedBoard, IFakeConsole dummyConsole, IGetterColorForCharacter getterColor)
+        {
+            this.displayedBoard = displayedBoard;
+            this.dummyConsole = dummyConsole;
+            this.getterColor = getterColor;
         }
 
         public void DisplayContent()
         {
-            Console.Clear();
-            Console.WriteLine("  1 2 3 4 5 6 7 8");
-            Console.WriteLine("  - - - - - - - -");
+            dummyConsole.Clear();
+            DisplayTopOfBoard();
             DisplayVerticalBoardLines();
+        }
+
+        private void DisplayTopOfBoard()
+        {
+            var numbers = new StringBuilder("  ");
+            var line = new StringBuilder("  ");
+            for (int i = 1; i <= MinesweeperGame.HorizontalDimensionOfBoard; ++i)
+            {
+                numbers.Append($"{i} ");
+                line.Append($"- ");
+            }
+            Console.WriteLine($"{numbers}");
+            Console.WriteLine($"{line}");
         }
 
         private void DisplayVerticalBoardLines()
         {
-            for (int i = 0; i < VerticalDimension; ++i)
+            for (int i = 0; i < MinesweeperGame.VerticalDimensionOfBoard; ++i)
             {
                 Console.Write(i + 1 + "|");
-                for (int j = 0; j < HorizontalDimension; ++j)
+                for (int j = 0; j < MinesweeperGame.HorizontalDimensionOfBoard; ++j)
                 {
-                    Console.ForegroundColor = GetColorForCharacter(i, j);
-                    Console.Write(DisplayedBoard[i, j] + " ");
+                    Console.ForegroundColor = getterColor.GetColorForCharacter(i, j);
+                    Console.Write(displayedBoard[i, j] + " ");
                     Console.ForegroundColor = ConsoleColor.White;
                 }
                 Console.WriteLine();
-            }
-        }
-
-        private ConsoleColor GetColorForCharacter(int i, int j)
-        {
-            switch (DisplayedBoard[i, j])
-            {
-                case MinesweeperGame.BombSign: return ConsoleColor.DarkRed;
-                case MinesweeperGame.FlagSign: return ConsoleColor.Yellow;
-                case '1': return ConsoleColor.Blue;
-                case '2': return ConsoleColor.Green;
-                case '3': return ConsoleColor.Red;
-                case '4': return ConsoleColor.DarkCyan;
-                case '5':
-                case '6':
-                case '7':
-                case '8':
-                    return ConsoleColor.Magenta;
-
-                default: return ConsoleColor.White;
             }
         }
     }

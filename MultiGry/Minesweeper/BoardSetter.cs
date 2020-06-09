@@ -1,28 +1,17 @@
 ﻿namespace MultiGry.Minesweeper
 {
-    class BoardSetter
+    public static class BoardSetter
     {
-        public char[,] DisplayedBoard { private set; get; }
-        public char[,] ActualBoardContent { private set; get; }
-        private readonly int VerticalDimension;
-        private readonly int HorizontalDimension;
-
-        public BoardSetter()
+        /// both arrays retrieved by the method must be of equal length.
+        /// First dimension must equal value of MinesweeperGame.VerticalDimensionOfBoard.
+        /// Second dimension must equal value of MinesweeperGame.HorizontalDimensionOfBoard
+        public static void CreateBoard(char[,] displayedBoard, char[,] actualBoardContent)
         {
-            VerticalDimension = MinesweeperGame.VerticalDimensionOfBoard;
-            HorizontalDimension = MinesweeperGame.HorizontalDimensionOfBoard;
-        }
-
-        public void CreateBoard()
-        {
-            DisplayedBoard = new char[VerticalDimension, HorizontalDimension];
-            ActualBoardContent = new char[VerticalDimension, HorizontalDimension];
-
-            for (int i = 0; i < VerticalDimension; ++i)
-                for (int j = 0; j < HorizontalDimension; ++j)
+            for (int i = 0; i < MinesweeperGame.VerticalDimensionOfBoard; ++i)
+                for (int j = 0; j < MinesweeperGame.HorizontalDimensionOfBoard; ++j)
                 {
-                    DisplayedBoard[i, j] = MinesweeperGame.SquareSign;
-                    ActualBoardContent[i, j] = MinesweeperGame.EmptyFieldSign;
+                    displayedBoard[i, j] = MinesweeperGame.SquareSign;
+                    actualBoardContent[i, j] = MinesweeperGame.EmptyFieldSign;
                 }
         }
     }

@@ -2,86 +2,89 @@
 
 namespace MultiGry.GuessingNumbers
 {
-    class GuessingNumbersGame : IMenuOption
+    public class GuessingNumbersGame : IMenuOption
     {
-        public string NameOption => "Zgadywanie liczb";
-        private byte NumberToGuess; 
-        private int UserAttempt;  
-        private byte UsersProposal; 
+        public string NameOption => "Zgadywanie liczb";  
+        private INumberGenerator NumberGenerator;
+        private IPerformerGame PerformerGame;
+        private IResultDisplay ResultDisplay;
+        private IDecisionOnFurtherCourseOfProgram ProgramExecution;
 
+        public GuessingNumbersGame()
+        {
+            NumberGenerator = new NumberGenerator();
+            PerformerGame = new PerformerGame();
+            ResultDisplay = new ResultDisplay(new FakeConsole());
+            ProgramExecution = new DecisionOnFurtherCourseOfProgram(this);
+        }
+
+        public GuessingNumbersGame(INumberGenerator NumberGenerator, 
+                                   IPerformerGame PerformerGame,
+                                   IResultDisplay ResultDisplay,
+                                   IDecisionOnFurtherCourseOfProgram ProgramExecution)
+        {
+            this.NumberGenerator = NumberGenerator;
+            this.PerformerGame = PerformerGame;
+            this.ResultDisplay = ResultDisplay;
+            this.ProgramExecution = ProgramExecution;
+        }
+
+        /// <exception cref = "InvalidOperationException">
+        /// if the number drawn is out of range from 1 to 100
+        /// </exception>
         public OptionsCategory OptionExecuting()
         {
-            SetDefaults();
-            UserAttemptsToGuessNumber();
-            ResultDisplay();
+            //SetDefaults();
 
-            var ProgramExecution = new DecisionOnFurtherCourseOfProgram(this);
+            PerformerGame.NumberToGuess = NumberGenerator.GetNumberBetween1And100();
+
+            int UserAttempt = PerformerGame.GameProcessing();
+            ResultDisplay.DisplayOnlyResult(UserAttempt);
+
             return ProgramExecution.UserDecidesWhatToDoNext();
         }
 
-        private void SetDefaults()
-        {
-            UserAttempt = 1;
+        //private void SetDefaults()
+        //{
+        //    UserAttempt = 1;
 
-            var random = new Random();
-            NumberToGuess = (byte) random.Next(1, 101);
-        }
+        //    var random = new Random(); 
+        //    NumberToGuess = (byte) random.Next(1, 101);
 
-        private void UserAttemptsToGuessNumber()
-        {
-            Console.WriteLine("Wybierz liczbę z przedziału od 1 do 100:");
+        //    GetterProposal = new GetterProposalFromUser();
+        //}
 
-            do
-            {
-                Console.Write("(Próba " + UserAttempt + ") Podaj liczbę: ");
-                GetProposalFromUser();
-                Console.Clear();
-            }
-            while (UsersProposal != NumberToGuess);
-        }
+        //private void UserAttemptsToGuessNumber()
+        //{
+        //    Console.WriteLine("Wybierz liczbę z przedziału od 1 do 100:");
 
-        private void GetProposalFromUser()
-        {
-            try
-            {
-                TryGetProposalFromUser();
-            }
-            catch (FormatException)
-            {                
-                Console.WriteLine("Nieprawidłowa wartość!");
-            }
-            catch (OverflowException)
-            {
-                Console.WriteLine("Podana liczba jest poza dozwolonym " +
-                                  "przedziałem (zakres wynosi 1 - 100)!");
-            }
-        }
+        //    do
+        //    {
+        //        Console.Write("(Próba " + UserAttempt + ") Podaj liczbę: ");
+        //        UsersProposal = GetterProposal.GetProposalFromUser();
+        //        ProcessingUserProposals();
+        //    }
+        //    while (UsersProposal != NumberToGuess);
+        //}
 
-        public void TryGetProposalFromUser()
-        {
-            UsersProposal = byte.Parse(Console.ReadLine());
+        //private void ProcessingUserProposals()
+        //{
+        //    if (UsersProposal != NumberToGuess)
+        //    {
+        //        string Message = UsersProposal > NumberToGuess ? "Za dużo!" 
+        //                                                       : "Za mało!";
+        //        Console.WriteLine(Message);
+        //        System.Threading.Thread.Sleep(1500);
 
-            if (UsersProposal < 1 || UsersProposal > 100)
-                throw new OverflowException();
+        //        ++UserAttempt;
+        //    }
+        //}
 
-            if (UsersProposal != NumberToGuess)
-            {
-                DisplayMessageAboutFailedGuessing();
-                ++UserAttempt;
-            }
-        }
-
-        private void DisplayMessageAboutFailedGuessing()
-        {
-            string Message = UsersProposal > NumberToGuess ? "Za dużo!" : "Za mało!";
-            Console.WriteLine(Message);
-            System.Threading.Thread.Sleep(1500);
-        }
-
-        private void ResultDisplay()
-        {
-            Console.WriteLine("Odgadłeś tę liczbę w próbie " + UserAttempt);
-            Console.ReadKey();
-        }
+        //private void DisplayOnlyResult()
+        //{
+        //    Console.Clear();
+        //    Console.WriteLine("Odgadłeś tę liczbę w próbie " + UserAttempt);
+        //    Console.ReadKey();
+        //}
     }
 }

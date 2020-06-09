@@ -26,10 +26,15 @@ namespace MultiGry.Hangman
 
         public void UserGuessingLetter()
         {
-            var HangmanGameInterface = new HangmanGameInterface(Game);
-            HangmanGameInterface.DisplayGameInterfaceWithoutOptions();
+            DisplayGameInterfaceWithoutOptions();
             UserGivesLetter();
-            LetterProcessingFromUser();           
+            LetterProcessingFromUser();
+        }
+
+        private void DisplayGameInterfaceWithoutOptions()
+        {
+            var GameInterface = new HangmanGameInterface(Game);
+            GameInterface.DisplayInterfaceWithoutOptions();
         }
 
         private void UserGivesLetter()
@@ -88,8 +93,7 @@ namespace MultiGry.Hangman
 
         public void UserGuessingWord()
         {
-            var HangmanGameInterface = new HangmanGameInterface(Game);
-            HangmanGameInterface.DisplayGameInterfaceWithoutOptions();
+            DisplayGameInterfaceWithoutOptions();
             UserGivesWord();
             RemoveWhitespaceFromPlayersWord();
             ResultOfGuessingWordByUser();

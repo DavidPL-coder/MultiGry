@@ -2,10 +2,36 @@
 
 namespace MultiGry.FilesEncryptor
 {
-    class FilesEncryptorOption : IMenuOption
+    public class FilesEncryptorOption : IMenuOption
     {
         public string NameOption => "(De)Szyfrator plików";
         private char OptionNumberSelectedByUser;
+        private IFakeConsole DummyConsole;
+        private IFileCreator FileCreator;
+        private IFileContentDisplay FileContentDisplay;
+        private IEncoderFile EncoderFile;
+        private IWindowsNotebook WindowsNotebook;
+
+        public FilesEncryptorOption()
+        {
+            DummyConsole = new FakeConsole();
+            FileCreator = new FileCreator();
+            FileContentDisplay = new FileContentDisplay();
+            EncoderFile = new EncoderFile();
+            WindowsNotebook = new WindowsNotebook();
+        }
+
+        public FilesEncryptorOption(IFakeConsole DummyConsole, IFileCreator FileCreator,
+                                    IFileContentDisplay FileContentDisplay, 
+                                    IEncoderFile EncoderFile,
+                                    IWindowsNotebook WindowsNotebook)
+        {
+            this.DummyConsole = DummyConsole;
+            this.FileCreator = FileCreator;
+            this.FileContentDisplay = FileContentDisplay;
+            this.EncoderFile = EncoderFile;
+            this.WindowsNotebook = WindowsNotebook;
+        }
 
         public OptionsCategory OptionExecuting()
         {
@@ -21,7 +47,7 @@ namespace MultiGry.FilesEncryptor
 
         private void DisplayOptions()
         {
-            Console.Clear();
+            DummyConsole.Clear();
             Console.WriteLine("1. Utwórz plik");
             Console.WriteLine("2. Otwórz plik");
             Console.WriteLine("3. Szyfruj plik");
@@ -33,78 +59,18 @@ namespace MultiGry.FilesEncryptor
 
         private void UserSelectsOptions()
         {
-            OptionNumberSelectedByUser = Console.ReadKey(true).KeyChar;
-            Console.Clear();
+            OptionNumberSelectedByUser = DummyConsole.ReadKey().KeyChar;
+            DummyConsole.Clear();
 
             switch (OptionNumberSelectedByUser)
             {
-                case '1': FileCreation(); break;
-                case '2': OpenFile(); break;
-                case '3': FileEncryption(); break;
-                case '4': FileDecryption(); break;
-                case '5': ReadEncryptedFile(); break;
-                case '6': EditingFileUsingNotebook(); break;
+                case '1': FileCreator.FileCreation(); break;
+                case '2': FileContentDisplay.OpenFile(); break;
+                case '3': EncoderFile.FileEncryption(); break;
+                case '4': EncoderFile.FileDecryption(); break;
+                case '5': FileContentDisplay.ReadEncryptedFile(); break;
+                case '6': WindowsNotebook.EditFile(); break;
             }
-        }
-
-        private void FileCreation()
-        {
-            var FileCreator = new FileCreator(this);
-            FileCreator.FileCreation();
-        }
-
-        public string GetFilePathFromUser() =>
-            Console.ReadLine() + ".txt";
-
-        public void DisplayRequestForFilePath(string MessageToUser) =>
-            Console.WriteLine(MessageToUser);
-
-        public void DisplayRequestForFilePath() => 
-            Console.WriteLine("Podaj nazwę pliku (lub ścieżkę względną): ");
-
-        public void DisplayOnlyTheMessage(string Message)
-        {
-            Console.Clear();
-            Console.WriteLine(Message);
-            System.Threading.Thread.Sleep(1500);
-        }
-
-        public void DisplayOnlyMessageAbout_FileDoesNotExist()
-        {
-            var Message = "Podany plik nie istnieje!" +
-                          " Upewnij się czy wprowadziłeś odpowiednią ścieżkę!";
-
-            DisplayOnlyTheMessage(Message);
-        }
-
-        private void OpenFile()
-        {
-            var FileContentDisplay = new FileContentDisplay(this);
-            FileContentDisplay.OpenFile();
-        }
-
-        private void FileEncryption()
-        {
-            var Encryptor = new EncoderFile(this);
-            Encryptor.FileEncryption();
-        }
-
-        private void FileDecryption()
-        {
-            var Decryptor = new EncoderFile(this);
-            Decryptor.FileDecryption();
-        }
-
-        private void ReadEncryptedFile()
-        {
-            var FileContentDisplay = new FileContentDisplay(this);
-            FileContentDisplay.ReadEncryptedFile();
-        }
-
-        private void EditingFileUsingNotebook()
-        {
-            var Notebook = new WindowsNotebook(this);
-            Notebook.OpenFileInNotebook();
         }
 
         private bool DidNotUserSelectExitOption() =>

@@ -27,8 +27,8 @@ namespace MultiGry
         {
             Console.ForegroundColor = ConsoleColor.White;
             var MenuOptions = GetListOfMenuOption();
-            var Menu = new MainMenu(MenuOptions);
-            Menu.ExecutingMainMenuOperation();
+            var Menu = new Menu.MainMenu(MenuOptions);
+            Menu.ExecutingMenuOperation();
         }
     }
 }

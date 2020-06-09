@@ -3,38 +3,28 @@ using System.Collections.Generic;
 
 namespace MultiGry.Minesweeper
 {
-    class MinesSetter
+    public class MinesSetter
     {        
-        private char[,] ActualBoardContent;
-        private List<Tuple<int, int>> CoordinatesOfMinesDrawn;
-        private readonly Tuple<int, int> IndexesOfField;
-        private readonly int VerticalDimension;
-        private readonly int HorizontalDimension;
-        private readonly char BombSign;
-        private Tuple<int, int> CoordinatePair;
+        private List<Tuple<int, int>> coordinatesOfMinesDrawn;
+        private readonly Tuple<int, int> indexesOfField;
+        private readonly INumberGenerator numberGenerator;
 
-        public MinesSetter(MinesweeperGame Game)
+        public MinesSetter(Tuple<int, int> indexesOfField, INumberGenerator numberGenerator)
         {
-            ActualBoardContent = Game.ActualBoardContent;
-            IndexesOfField = Game.SelectedFieldIndexes.TupleOfIndexes;
-
-            VerticalDimension = MinesweeperGame.VerticalDimensionOfBoard;
-            HorizontalDimension = MinesweeperGame.HorizontalDimensionOfBoard;
-            BombSign = MinesweeperGame.BombSign;
-
-            CoordinatesOfMinesDrawn = new List<Tuple<int, int>>();
+            this.indexesOfField = indexesOfField;
+            this.numberGenerator = numberGenerator;
+            coordinatesOfMinesDrawn = new List<Tuple<int, int>>();
         }
 
-        public void SetMinesOnBoard()
+        public void SetMinesOnBoard(char[,] actualBoardContent, int numberOfMines)
         {
-            for (int i = 0; i < MinesweeperGame.NumberOfMines; ++i)
+            for (int i = 0; i < numberOfMines; ++i)
             {
-                SetCoordinatePair();
-                if (CanMineBeInThisField())
+                var coordinatePair = GetCoordinatePair();
+                if (CanMineBeInThisField(coordinatePair))
                 {
-                    ActualBoardContent[CoordinatePair.Item1, 
-                                       CoordinatePair.Item2] = BombSign;
-                    CoordinatesOfMinesDrawn.Add(CoordinatePair);
+                    actualBoardContent[coordinatePair.Item1, coordinatePair.Item2] = MinesweeperGame.BombSign;
+                    coordinatesOfMinesDrawn.Add(coordinatePair);
                 }
 
                 else
@@ -42,16 +32,15 @@ namespace MultiGry.Minesweeper
             }
         }
 
-        private void SetCoordinatePair()
+        private Tuple<int, int> GetCoordinatePair()
         {
-            var NumberGenerator = new Random();
-            int Vertical = NumberGenerator.Next(0, VerticalDimension);
-            int Horizontal = NumberGenerator.Next(0, HorizontalDimension);
-            CoordinatePair = Tuple.Create(Vertical, Horizontal);
+            int vertical = numberGenerator.Next(0, MinesweeperGame.VerticalDimensionOfBoard);
+            int horizontal = numberGenerator.Next(0, MinesweeperGame.HorizontalDimensionOfBoard);
+            return Tuple.Create(vertical, horizontal);
         }
 
-        private bool CanMineBeInThisField() => 
-            !CoordinatesOfMinesDrawn.Contains(CoordinatePair) &&
-            !CoordinatesOfMinesDrawn.Contains(IndexesOfField);
+        private bool CanMineBeInThisField(Tuple<int, int> coordinatePair) => 
+            !coordinatesOfMinesDrawn.Contains(coordinatePair) &&
+            !coordinatePair.Equals(indexesOfField);
     }
 }

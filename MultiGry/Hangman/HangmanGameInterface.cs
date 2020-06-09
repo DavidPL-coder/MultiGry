@@ -18,7 +18,7 @@ namespace MultiGry.Hangman
             NumberOfUserErrors = Game.NumberOfUserErrors;
         }
 
-        public void DisplayGameInterface()
+        public void DisplayInterface()
         {
             Console.Clear();
             DisplayContentOfDisplayedCharacters();
@@ -53,7 +53,7 @@ namespace MultiGry.Hangman
             Console.WriteLine("2. Odgadnięcie hasła");
         }
 
-        public void DisplayGameInterfaceWithoutOptions()
+        public void DisplayInterfaceWithoutOptions()
         {
             Console.Clear();
             DisplayContentOfDisplayedCharacters();

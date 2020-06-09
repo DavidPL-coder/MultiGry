@@ -5,21 +5,26 @@ using System.Text;
 
 namespace MultiGry.FilesEncryptor
 {
-    class ReaderFile
+    public class ReaderFile
     {
-        private List<string> TextFromFile;
-        private readonly Encoding EncodingConsole;
+        private StreamReader StreamReader;
 
-        public ReaderFile()
+        public ReaderFile(string Path)
         {
-            EncodingConsole = Encoding.GetEncoding("Windows-1250");
-            TextFromFile = new List<string>();
+            StreamReader = new StreamReader(Path, 
+                                            Encoding.GetEncoding("Windows-1250"));
+        }
+
+        public ReaderFile(MemoryStream FakeFileContent)
+        {            
+            StreamReader = new StreamReader(FakeFileContent, 
+                                            Encoding.GetEncoding("Windows-1250"));
         }
 
         /// <returns> the method returns the text from the file as a list. 
         /// Each element of the list is one line from the file </returns>
         /// <exception cref = "ArgumentException"> when Path is empty </exception>
-        /// <exception cref = "ArgumentNullException"></exception>
+        /// <exception cref = "ArgumentNullException"> when Path is null </exception>
         /// <exception cref = "FileNotFoundException"> 
         /// when file doesn't exist 
         /// </exception>
@@ -29,13 +34,15 @@ namespace MultiGry.FilesEncryptor
         /// <exception cref = "NotSupportedException">
         /// when the path is in the wrong format
         /// </exception>
-        public List<string> ReadDataFromFile(string Path)
-        {
-            using (var streamReader = new StreamReader(Path, EncodingConsole))
+        public List<string> ReadData()
+        {   
+            var TextFromFile = new List<string>();
+
+            using (StreamReader)
             {
                 string tmp;
-                while ((tmp = streamReader.ReadLine()) != null)
-                    TextFromFile.Add(tmp);
+                while ((tmp = StreamReader.ReadLine()) != null)
+                    TextFromFile.Add(tmp); 
             }
 
             return TextFromFile;

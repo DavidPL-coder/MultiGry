@@ -6,7 +6,7 @@ namespace MultiGry.Minesweeper
     // differently in other character encoding systems. Characters are displayed 
     // correctly for Windows-1250 encoding
 
-    class MinesweeperGame : IMenuOption
+    public class MinesweeperGame : IMenuOption
     {
         public string NameOption => "Saper";
         public const int VerticalDimensionOfBoard = 8;
@@ -16,12 +16,12 @@ namespace MultiGry.Minesweeper
         public const char FlagSign = 'C';
         public const char BombSign = '*';
         public const int NumberOfMines = 10;
-        private bool IsThereFirstRound;
         public char[,] DisplayedBoard { private set; get; }
         public char[,] ActualBoardContent { private set; get; }
         public GameDuration GameTime { private set; get; }
         public GameStatus StatusOfGame { private set; get; }
-        public ManagerOfFieldIndexes SelectedFieldIndexes { private set; get; }
+        private GameStarter gameStarter;
+        //public ManagerOfFieldIndexes SelectedFieldIndexes { private set; get; }
 
         public OptionsCategory OptionExecuting()
         {
@@ -37,102 +37,109 @@ namespace MultiGry.Minesweeper
 
         private void SetDefaults()
         {
-            IsThereFirstRound = true;
             SetBoard();
             StatusOfGame = GameStatus.DuringGame;
             GameTime = new GameDuration();
+            gameStarter = new GameStarter(this);
         }
 
         private void SetBoard()
         {
-            var BoardSetter = new BoardSetter();
-            BoardSetter.CreateBoard();
-            DisplayedBoard = BoardSetter.DisplayedBoard;
-            ActualBoardContent = BoardSetter.ActualBoardContent;
+            DisplayedBoard = new char[VerticalDimensionOfBoard, HorizontalDimensionOfBoard];
+            ActualBoardContent = new char[VerticalDimensionOfBoard, HorizontalDimensionOfBoard];
+            BoardSetter.CreateBoard(DisplayedBoard, ActualBoardContent);
         }
 
         private void PlayingGame()
         {
             GameTime.Start();
-
+            bool areGameBoardsReady = false;
             while (StatusOfGame == GameStatus.DuringGame)
             {
                 DisplayBoardContent();
-                if (IsThereFirstRound)
-                    StartingGame();
+                if (!areGameBoardsReady)
+                    areGameBoardsReady = gameStarter.PreparingToPlayGame();
 
                 else
                     PlayingRound();
             }
-
             GameTime.Stop();
         }
 
         private void DisplayBoardContent()
         {
-            var BoardDisplay = new BoardDisplay(DisplayedBoard);
-            BoardDisplay.DisplayContent();
+            var boardDisplay = new BoardDisplay(DisplayedBoard);
+            boardDisplay.DisplayContent();
         }
 
-        private void StartingGame()
-        {
-            SelectedFieldIndexes = new ManagerOfFieldIndexes();
-            SelectedFieldIndexes.UserInputOfFieldIndexesInTextVersion();
+        /// <returns> Returns "true" when the mines were drawn randomly 
+        /// (i.e. prepare the board for the game)
+        /// Returns "false" when drawing the mines failed
+        /// (user entered incorrect field coordinates) </returns>
+        //private bool PreparingToPlayGame()
+        //{
+        //    SelectedFieldIndexes = new ManagerOfFieldIndexes();
+        //    SelectedFieldIndexes.UserInputOfFieldIndexesInTextVersion();
 
-            if (SelectedFieldIndexes.CheckIndexesInTextVersion())
-                PreparingToPlayGame();
+        //    if (SelectedFieldIndexes.CheckIndexesInTextVersion())
+        //    {
+        //        DrawMines(); 
+        //        return true;
+        //    }
 
-            else
-                DisplayMessage("Wprowadzono nieprawidłowe wartości!");
-        }
+        //    else
+        //    {
+        //        DisplayMessage("Wprowadzono nieprawidłowe wartości!");
+        //        return false;
+        //    }
+        //}
 
-        private void PreparingToPlayGame()
-        {
-            SelectedFieldIndexes.SetTupleOfIndexes();
-            SetMinesOnBoard();
-            LoadNumberOfMinesIntoDisplayedBoard();
-            IsThereFirstRound = false;
-        }
+        //private void DrawMines()
+        //{
+        //    SelectedFieldIndexes.SetTupleOfIndexes();
+        //    SetMinesOnBoard();
+        //    LoadNumberOfMinesIntoDisplayedBoard();
+        //}
 
-        private void SetMinesOnBoard()
-        {
-            var MinesSetter = new MinesSetter(this);
-            MinesSetter.SetMinesOnBoard();
-        }
+        //private void SetMinesOnBoard()
+        //{
+        //    //var MinesSetter = new MinesSetter(this);
+        //    //MinesSetter.SetMinesOnBoard();
+        //}
 
-        private void LoadNumberOfMinesIntoDisplayedBoard()
-        {
-            Rect SquareOfExposedFields = SetRandomSquareOfExposedFields();
-            var MinesCounter = new MinesCounter(this, SquareOfExposedFields);
-            MinesCounter.LoadNumberOfMinesIntoDisplayedBoard();
-        }
+        //private void LoadNumberOfMinesIntoDisplayedBoard()
+        //{
+        //    Rect SquareOfExposedFields = SetRandomSquareOfExposedFields();
+        //    var MinesCounter = new MinesCounter(this, SquareOfExposedFields);
+        //    MinesCounter.LoadNumberOfMinesIntoDisplayedBoard();
+        //}
 
-        private Rect SetRandomSquareOfExposedFields()
-        {
-            var GetterSquare = new GetterSquareOfExposedFields(SelectedFieldIndexes
-                                                              .TupleOfIndexes);
-            return GetterSquare.GetRandomSquare();
-        }
+        //private Rect SetRandomSquareOfExposedFields()
+        //{
+        //    var GetterSquare = new GetterSquareOfExposedFields(SelectedFieldIndexes
+        //                                                      .TupleOfIndexes);
+        //    return GetterSquare.GetRandomSquare();
+        //}
 
-        private void DisplayMessage(string Message)
-        {
-            Console.WriteLine(Message);
-            System.Threading.Thread.Sleep(1500);
-        }
+        //private void DisplayMessage(string Message)
+        //{
+        //    Console.WriteLine(Message);
+        //    System.Threading.Thread.Sleep(1500);
+        //}
 
         private void PlayingRound()
         {
-            var PerformerRoundPlayed = new PerformerRoundPlayed(this);
-            PerformerRoundPlayed.DisplayOptionsToSelectFrom();
-            var Key = Console.ReadKey(true).Key;
+            var performerRoundPlayed = new PerformerRoundPlayed(this);
+            performerRoundPlayed.DisplayOptionsToSelectFrom();
+            var key = Console.ReadKey(true).Key;
 
-            if (Key >= ConsoleKey.D1 && Key <= ConsoleKey.D5)
-                PerformerRoundPlayed.PerformOperationsForSelectedOption(Key);
+            if (key >= ConsoleKey.D1 && key <= ConsoleKey.D5)
+                performerRoundPlayed.PerformOperationsForSelectedOption(key);
 
             else
-                PerformerRoundPlayed.DisplayWrongOptionNumberMessage();
+                performerRoundPlayed.DisplayWrongOptionNumberMessage();
 
-            StatusOfGame = PerformerRoundPlayed.StatusOfGame;
+            StatusOfGame = performerRoundPlayed.StatusOfGame;
         }
 
         // method should be called only for StatusOfGame 
@@ -140,10 +147,11 @@ namespace MultiGry.Minesweeper
         private void DisplayGameResult()
         {
             DisplayBoardContent();
-            string Message = StatusOfGame == GameStatus.PlayerWin ? 
-                             "Brawo! Wygrałeś!" : "Niestety! Nie udało ci się!";
+            string message = StatusOfGame == GameStatus.PlayerWin 
+                ? "Brawo! Wygrałeś!" 
+                : "Niestety! Nie udało ci się!";
 
-            Console.WriteLine(Message);
+            Console.WriteLine(message);
             Console.WriteLine("Twój czas: " + GameTime.GetTimeInTextVersion());
             Console.ReadKey();
         }   

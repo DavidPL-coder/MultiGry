@@ -19,7 +19,7 @@ namespace MultiGry.Properties {
     // przez narzędzie, takie jak ResGen lub Visual Studio.
     // Aby dodać lub usunąć składową, edytuj plik ResX, a następnie ponownie uruchom narzędzie ResGen
     // z opcją /str lub ponownie utwórz projekt VS.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     public class Resources {
@@ -61,42 +61,50 @@ namespace MultiGry.Properties {
         }
         
         /// <summary>
-        /// Wyszukuje zlokalizowany ciąg podobny do ciągu telefon
+        /// Wyszukuje zlokalizowany ciąg podobny do ciągu antropomorfizacja
+        ///telefon
+        ///wegetarianin
+        ///żółć
+        ///antykoncepcja
         ///komputer
         ///rewolwer
+        ///współuczestnictwo
         ///autostrada
         ///huragan
         ///kompresja
+        ///bałwochwalstwo
         ///kasztan
         ///helikopter
+        ///mineralizowana
         ///kamper
         ///butelka
+        ///wewnątrzszpitalny
         ///kaskader
         ///laptop
         ///komputer
+        ///wyselekcjonowany
         ///myszka
         ///telefon
+        ///prześladowanie
         ///pilot
         ///koniunkcja
         ///operator
+        ///usatysfakcjonowany
+        ///stróżówka
         ///stolik
+        ///decentralizacja
         ///pastuch
         ///owca
+        ///rozczochraniec
         ///paluszki
         ///krakersy
+        ///brzuchomówca
+        ///flourescencyjny
         ///serwis
         ///mieszkanie
+        ///interpunkcja
         ///balon
-        ///obiad
-        ///karygodny
-        ///krokodyl
-        ///autostrada
-        ///policja
-        ///konfident
-        ///bachor
-        ///kataklizm
-        ///wariatka
-        ///kontakt.
+        ///cy [obcięto pozostałą część ciągu]&quot;;.
         /// </summary>
         public static string HangmanGameWords {
             get {

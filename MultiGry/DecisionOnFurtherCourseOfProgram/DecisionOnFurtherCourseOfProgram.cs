@@ -2,26 +2,41 @@
 
 namespace MultiGry
 {
-    class DecisionOnFurtherCourseOfProgram
+    public class DecisionOnFurtherCourseOfProgram : IDecisionOnFurtherCourseOfProgram
     {
         private IMenuOption Option;
+        private IFakeConsole DummyConsole;
+        private IMenuOption ExitFromProgram;
         private ConsoleKey OptionChosenByUser;
 
-        public DecisionOnFurtherCourseOfProgram(IMenuOption option) => 
-            Option = option;
+        public DecisionOnFurtherCourseOfProgram(IMenuOption Option)
+        {
+            this.Option = Option;
+            DummyConsole = new FakeConsole();
+            ExitFromProgram = new Exit.ExitOption(DummyConsole);
+        }
+
+        public DecisionOnFurtherCourseOfProgram(IMenuOption Option, 
+                                                IFakeConsole DummyConsole, 
+                                                IMenuOption Exit)
+        {
+            this.Option = Option;
+            this.DummyConsole = DummyConsole;
+            ExitFromProgram = Exit;
+        }
 
         public OptionsCategory UserDecidesWhatToDoNext()
         {
             DisplayOnlyOptions();
-            OptionChosenByUser = Console.ReadKey().Key;
-            Console.Clear();
+            OptionChosenByUser = DummyConsole.ReadKey().Key;
+            DummyConsole.Clear();
 
             return ExecutingSpecificOperation();
         }
 
         private void DisplayOnlyOptions()
         {
-            Console.Clear();
+            DummyConsole.Clear();
             Console.WriteLine("Co dalej chcesz robić?");
             Console.WriteLine("1. Zagrać jeszcze raz");
             Console.WriteLine("2. Powrócić do Menu");
@@ -42,7 +57,6 @@ namespace MultiGry
                     return OptionsCategory.NormalOption;
 
                 case ConsoleKey.D3:
-                    var ExitFromProgram = new Exit.ExitOption();
                     return ExitFromProgram.OptionExecuting();
 
                 default:

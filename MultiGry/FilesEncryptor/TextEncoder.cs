@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Text;
 
 namespace MultiGry.FilesEncryptor
 {
     // for encrypting files, the Caesar cipher was used
     // more information about this: https://pl.wikipedia.org/wiki/Szyfr_Cezara
-    class TextEncoder
+    public class TextEncoder
     {
         private enum LetterType
         {

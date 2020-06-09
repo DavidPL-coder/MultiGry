@@ -42,7 +42,7 @@ namespace MultiGry.Hangman
             while (!IsGameOver())
             {
                 var HangmanGameInterface = new HangmanGameInterface(this);
-                HangmanGameInterface.DisplayGameInterface();
+                HangmanGameInterface.DisplayInterface();
                 UserSelectsOptions();
             }
         }

@@ -4,24 +4,23 @@ namespace MultiGry.Minesweeper
 {
     class PerformerRoundPlayed
     {
-        private ManagerOfFieldIndexes SelectedFieldIndexes;
+        private ManagerOfFieldIndexes selectedFieldIndexes;
         public GameStatus StatusOfGame { private set; get; }
-        private char[,] DisplayedBoard;
-        private readonly char[,] ActualBoardContent;
-        private readonly MinesweeperGame Game;
+        private char[,] displayedBoard;
+        private readonly char[,] actualBoardContent;
+        private readonly MinesweeperGame game;
 
-        public PerformerRoundPlayed(MinesweeperGame Game)
+        public PerformerRoundPlayed(MinesweeperGame game)
         {
-            StatusOfGame = Game.StatusOfGame;
-            DisplayedBoard = Game.DisplayedBoard;
-            ActualBoardContent = Game.ActualBoardContent;
-
-            this.Game = Game;
+            StatusOfGame = game.StatusOfGame;
+            displayedBoard = game.DisplayedBoard;
+            actualBoardContent = game.ActualBoardContent;
+            this.game = game;
         }
 
         public void DisplayOptionsToSelectFrom()
         {
-            Console.WriteLine("\n" + "Wybierz opcje: ");
+            Console.WriteLine("\nWybierz opcje: ");
             Console.WriteLine("1. Odsłoń pole");
             Console.WriteLine("2. Ustaw chorągiewkę");
             Console.WriteLine("3. Usuń chorągiewkę");
@@ -29,19 +28,19 @@ namespace MultiGry.Minesweeper
             Console.WriteLine("5. Pokaż upłynięty czas");
         }
 
-        public void PerformOperationsForSelectedOption(ConsoleKey KeySelectedByUser)
+        public void PerformOperationsForSelectedOption(ConsoleKey keySelectedByUser)
         {
-            if (KeySelectedByUser == ConsoleKey.D4)
+            if (keySelectedByUser == ConsoleKey.D4)
                 TryingToStopGame();
 
-            else if (KeySelectedByUser == ConsoleKey.D5)
+            else if (keySelectedByUser == ConsoleKey.D5)
                 DisplayElapsedGameTime();
 
             else
             {
                 UserInputOfFieldIndexes();
-                if (SelectedFieldIndexes.CheckIndexesInTextVersion())
-                    PerformingPlayerActionsOnBoard(KeySelectedByUser);
+                if (selectedFieldIndexes.CheckIndexesInTextVersion())
+                    PerformingPlayerActionsOnBoard(keySelectedByUser);
 
                 else
                     DisplayMessage("Wprowadzono nieprawidłowe wartości!");
@@ -51,26 +50,25 @@ namespace MultiGry.Minesweeper
         private void TryingToStopGame()
         {
             Console.WriteLine("Czy napewno chcesz zakończyć rozgrywkę?");
-            Console.WriteLine("(naciśnij enter aby potwierdzić, bądź inny " +
-                              "klawisz aby anulować)");
+            Console.WriteLine("(naciśnij enter aby potwierdzić, bądź inny klawisz aby anulować)");
 
             if (Console.ReadKey(true).Key == ConsoleKey.Enter)
                 StatusOfGame = GameStatus.Break;
         }
 
         private void DisplayElapsedGameTime() =>
-            DisplayMessage("Czas: " + Game.GameTime.GetTimeInTextVersion());
+            DisplayMessage("Czas: " + game.GameTime.GetTimeInTextVersion());
 
         private void UserInputOfFieldIndexes()
         {
-            SelectedFieldIndexes = new ManagerOfFieldIndexes();
-            SelectedFieldIndexes.UserInputOfFieldIndexesInTextVersion();
+            selectedFieldIndexes = new ManagerOfFieldIndexes();
+            selectedFieldIndexes.UserInputOfFieldIndexesInTextVersion();
         }
 
-        private void PerformingPlayerActionsOnBoard(ConsoleKey KeySelectedByUser)
+        private void PerformingPlayerActionsOnBoard(ConsoleKey keySelectedByUser)
         {
-            SelectedFieldIndexes.SetTupleOfIndexes();
-            switch (KeySelectedByUser)
+            selectedFieldIndexes.SetTupleOfIndexes();
+            switch (keySelectedByUser)
             {
                 case ConsoleKey.D1: PlayerRevealsField(); break;
                 case ConsoleKey.D2: PlayerSetsFlagOnField(); break;
@@ -81,14 +79,14 @@ namespace MultiGry.Minesweeper
         private void PlayerRevealsField()
         {
             if (DidUserSelectFlaggedField())
-                DisplayMessage("Na tym pole jest chorągiewka, więc nie można " +
-                               "odsłonić pola!");
+                DisplayMessage("Na tym pole jest chorągiewka, więc nie można odsłonić pola!");
 
             else if (IsNotSelectedFieldMined())
             {
                 UnveilingFieldOrSeveralFields();
-                StatusOfGame = DidPlayerRevealAllEmptyFields() ? GameStatus.PlayerWin 
-                                                               : GameStatus.DuringGame;
+                StatusOfGame = DidPlayerRevealAllEmptyFields() 
+                    ? GameStatus.PlayerWin 
+                    : GameStatus.DuringGame;
             }
 
             else
@@ -99,71 +97,68 @@ namespace MultiGry.Minesweeper
         }
 
         private bool DidUserSelectFlaggedField() =>
-            DisplayedBoard[SelectedFieldIndexes.Vertical, 
-                          SelectedFieldIndexes.Horizontal] == 
-                          MinesweeperGame.FlagSign;
+            displayedBoard[selectedFieldIndexes.VerticalIndex, selectedFieldIndexes.HorizontalIndex] == MinesweeperGame.FlagSign;
 
         private bool IsNotSelectedFieldMined() =>
-            ActualBoardContent[SelectedFieldIndexes.Vertical,
-                               SelectedFieldIndexes.Horizontal] != 
-                               MinesweeperGame.BombSign;
+            actualBoardContent[selectedFieldIndexes.VerticalIndex, selectedFieldIndexes.HorizontalIndex] != MinesweeperGame.BombSign;
 
         private void UnveilingFieldOrSeveralFields()
         {       
-            int NumbersMines = DisplayNumberOfMinesInField();
+            int numbersMines = DisplayNumberOfMinesInField();
 
-            if (NumbersMines == 0)
+            if (numbersMines == 0)
                 RevealEmptyFieldsAroundSelectedField();
         }
 
         private int DisplayNumberOfMinesInField()
         {
-            var MinesCounter = new MinesCounter(Game, new Rect());
-
-            return MinesCounter.DisplayNumberOfMinesInField(
-                SelectedFieldIndexes.Vertical, SelectedFieldIndexes.Horizontal);
+            var minesCounter = new MinesCounter(displayedBoard, actualBoardContent, new Rect());
+            return minesCounter.DisplayNumberOfMinesInField(selectedFieldIndexes.VerticalIndex, selectedFieldIndexes.HorizontalIndex);
         }
 
         private void RevealEmptyFieldsAroundSelectedField()
         {
-            var GetterSquare = new GetterSquareOfExposedFields(SelectedFieldIndexes
-                                                               .TupleOfIndexes);
+            var getterSquare = new GetterSquareOfExposedFields(selectedFieldIndexes.TupleOfIndexes);
+            Rect exposedFields = getterSquare.GetSquareAroundSelectedField();
 
-            Rect ExposedFields = GetterSquare.GetSquareAroundSelectedField();
-
-            var MinesCounter = new MinesCounter(Game, ExposedFields);
-            MinesCounter.LoadNumberOfMinesIntoDisplayedBoard();
+            var minesCounter = new MinesCounter(displayedBoard, actualBoardContent, exposedFields);
+            minesCounter.LoadNumberOfMinesIntoDisplayedBoard();
         }
 
         private bool DidPlayerRevealAllEmptyFields()
         {
             for (int i = 0; i < MinesweeperGame.VerticalDimensionOfBoard; ++i)
+            {
                 for (int j = 0; j < MinesweeperGame.HorizontalDimensionOfBoard; ++j)
+                {
                     if (IsTheFieldEmptyAndUnrevealed(i, j))
                         return false;
-
+                }
+            }
             return true;
         }
 
         private bool IsTheFieldEmptyAndUnrevealed(int i, int j) => 
-            ActualBoardContent[i, j] == MinesweeperGame.EmptyFieldSign && 
-            DisplayedBoard[i, j] == MinesweeperGame.SquareSign;
+            actualBoardContent[i, j] == MinesweeperGame.EmptyFieldSign && displayedBoard[i, j] == MinesweeperGame.SquareSign;
 
         private void UnveilingAllMines()
         {
             for (int i = 0; i < MinesweeperGame.VerticalDimensionOfBoard; ++i)
+            {
                 for (int j = 0; j < MinesweeperGame.HorizontalDimensionOfBoard; ++j)
-                    if (ActualBoardContent[i, j] == MinesweeperGame.BombSign)
-                        DisplayedBoard[i, j] = MinesweeperGame.BombSign;
+                {
+                    if (actualBoardContent[i, j] == MinesweeperGame.BombSign)
+                        displayedBoard[i, j] = MinesweeperGame.BombSign;
+                }
+            }
         }
 
         private void PlayerSetsFlagOnField()
         {
-            ref char CurrentBoardField = ref DisplayedBoard[
-                SelectedFieldIndexes.Vertical, SelectedFieldIndexes.Horizontal];
+            ref char currentBoardField = ref displayedBoard[selectedFieldIndexes.VerticalIndex, selectedFieldIndexes.HorizontalIndex];
 
-            if (CurrentBoardField == MinesweeperGame.SquareSign)
-                CurrentBoardField = MinesweeperGame.FlagSign;
+            if (currentBoardField == MinesweeperGame.SquareSign)
+                currentBoardField = MinesweeperGame.FlagSign;
 
             else
                 DisplayMessage("Tutaj nie można wstawić flagi!");
@@ -171,19 +166,18 @@ namespace MultiGry.Minesweeper
 
         private void PlayerRemovesFlagOnField()
         {
-            ref char CurrentBoardField = ref DisplayedBoard[
-                SelectedFieldIndexes.Vertical, SelectedFieldIndexes.Horizontal];
+            ref char currentBoardField = ref displayedBoard[selectedFieldIndexes.VerticalIndex, selectedFieldIndexes.HorizontalIndex];
 
-            if (CurrentBoardField == MinesweeperGame.FlagSign)
-                CurrentBoardField = MinesweeperGame.SquareSign;
+            if (currentBoardField == MinesweeperGame.FlagSign)
+                currentBoardField = MinesweeperGame.SquareSign;
 
             else
                 DisplayMessage("Na tym polu nie ma flagi!");
         }
 
-        private void DisplayMessage(string Message)
+        private void DisplayMessage(string message)
         {
-            Console.WriteLine(Message);
+            Console.WriteLine(message);
             System.Threading.Thread.Sleep(1500);
         }
 
